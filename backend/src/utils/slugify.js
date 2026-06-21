@@ -17,3 +17,22 @@ const slugify = (str = "") => {
 };
 
 export default slugify;
+
+/**
+ * Sinh slug DUY NHẤT cho một Model (tránh đụng unique index).
+ * Nếu trùng, thêm hậu tố -2, -3... Bỏ qua chính document đang sửa (excludeId).
+ */
+export const generateUniqueSlug = async (Model, name, excludeId = null) => {
+  const base = slugify(name) || "item";
+  let slug = base;
+  let n = 1;
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const query = { slug };
+    if (excludeId) query._id = { $ne: excludeId };
+    const exists = await Model.exists(query);
+    if (!exists) return slug;
+    n += 1;
+    slug = `${base}-${n}`;
+  }
+};

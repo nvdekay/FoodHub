@@ -167,7 +167,7 @@ Các quyết định dưới đây bổ sung/làm rõ SRS, là chuẩn để cod
 ## PHASE 4 — Thực đơn: Danh mục & Món (FR-MENU, SRS 7.2)
 **Mục tiêu:** CRUD category/product với soft delete & snapshot-friendly.
 
-- [ ] `middlewares/upload.js` — multer lưu ảnh (disk), giới hạn loại/dung lượng; trả `imageUrl`.
+- [ ] **Ảnh:** KHÔNG upload file. `imageUrl` là **chuỗi link** do người dùng điền, lưu thẳng DB (không dùng multer, không phụ thuộc hệ thống lưu trữ bên thứ ba).
 - [ ] `categoryService` + `categoryController`:
   - `GET /api/categories` công khai (FR-MENU-01) — chỉ `isActive=true`, sort `displayOrder`. (Hỗ trợ query `?all=true` cho staff xem cả ẩn.)
   - `POST /api/categories` 👮 — tự sinh slug, name duy nhất.
@@ -290,7 +290,7 @@ Các quyết định dưới đây bổ sung/làm rõ SRS, là chuẩn để cod
 
 ## Quyết định kỹ thuật đã chốt
 1. **Validation lib:** `express-validator`.
-2. **Upload ảnh:** lưu local disk qua `multer`, phục vụ tĩnh; có thể đổi sang cloud sau.
+2. **Ảnh:** lưu **link ảnh (URL string)** trong `imageUrl`, không upload file / không dùng dịch vụ lưu trữ bên thứ ba (chốt theo yêu cầu).
 3. **bcrypt:** `bcryptjs` (thuần JS, không cần build native).
 4. **Transaction:** ưu tiên atomic conditional update; dùng session khi có replica set, fallback tuần tự khi local standalone.
 5. **Thứ tự thực hiện:** tuần tự Phase 1 → 9.
