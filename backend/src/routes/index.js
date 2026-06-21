@@ -1,9 +1,11 @@
 import { Router } from "express";
+import authRoutes from "./authRoutes.js";
+import userRoutes from "./userRoutes.js";
 
 /**
  * Router gốc cho toàn bộ API (tiền tố /api).
- * Các module sẽ được mount dần qua từng phase:
- *   Phase 3: authRoutes, userRoutes
+ * Các module được mount dần qua từng phase:
+ *   Phase 3: authRoutes, userRoutes ✓
  *   Phase 4: categoryRoutes, productRoutes
  *   Phase 5: tableRoutes
  *   Phase 6-7: orderRoutes
@@ -15,8 +17,9 @@ router.get("/health", (req, res) => {
   res.json({ success: true, message: "FoodHub API OK", data: { uptime: process.uptime() } });
 });
 
-// router.use("/auth", authRoutes);
-// router.use("/users", userRoutes);
+router.use("/auth", authRoutes);
+router.use("/users", userRoutes);
+
 // router.use("/categories", categoryRoutes);
 // router.use("/products", productRoutes);
 // router.use("/tables", tableRoutes);
