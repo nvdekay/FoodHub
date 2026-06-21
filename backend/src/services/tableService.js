@@ -58,3 +58,26 @@ export const deleteTable = async (id) => {
   await table.save();
   return table;
 };
+
+/**
+ * Đồng bộ trạng thái bàn theo reference-counting (quyết định #1).
+ * occupied khi còn ≥1 đơn active trên bàn; available khi hết.
+ * KHÔNG động vào bàn đang 'reserved' (nhân viên đặt thủ công).
+ * Gọi sau khi tạo/đổi trạng thái/huỷ đơn.
+ */
+export const syncTableStatus = async (tableId) => {
+  if (!tableId) return;
+  const table = await Table.findById(tableId);
+  if (!table || table.status === "reserved") return;
+
+  const activeCount = await Order.countDocuments({
+    tableId,
+    status: { $in: ACTIVE_ORDER_STATUSES },
+  });
+  const newStatus = activeCount > 0 ? "occupied" : "available";
+
+  if (table.status !== newStatus) {
+    table.status = newStatus;
+    await table.save();
+  }
+};
