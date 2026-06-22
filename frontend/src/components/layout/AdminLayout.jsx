@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { Dialog, DialogPanel } from "@headlessui/react";
-import { LayoutDashboard, ReceiptText, Coffee, Armchair, Users, Menu as MenuIcon } from "lucide-react";
+import { LayoutDashboard, ReceiptText, Coffee, Tags, Armchair, Users, Menu as MenuIcon } from "lucide-react";
 import { cn } from "../../lib/cn";
 import { useAuth } from "../../context/AuthContext";
 import UserMenu from "./UserMenu";
@@ -9,7 +9,8 @@ import UserMenu from "./UserMenu";
 const NAV = [
   { to: "/admin", label: "Tổng quan", icon: LayoutDashboard, end: true },
   { to: "/admin/orders", label: "Đơn hàng", icon: ReceiptText },
-  { to: "/admin/products", label: "Thực đơn", icon: Coffee },
+  { to: "/admin/categories", label: "Danh mục", icon: Tags },
+  { to: "/admin/products", label: "Món", icon: Coffee },
   { to: "/admin/tables", label: "Bàn", icon: Armchair },
   { to: "/admin/users", label: "Người dùng", icon: Users, adminOnly: true },
 ];

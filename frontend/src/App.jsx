@@ -12,6 +12,8 @@ import ProfilePage from "./pages/ProfilePage";
 import DashboardPage from "./pages/DashboardPage";
 import AdminOrdersPage from "./pages/admin/AdminOrdersPage";
 import AdminOrderDetailPage from "./pages/admin/AdminOrderDetailPage";
+import AdminCategoriesPage from "./pages/admin/AdminCategoriesPage";
+import AdminProductsPage from "./pages/admin/AdminProductsPage";
 import DesignSystemPage from "./pages/DesignSystemPage";
 import PlaceholderPage from "./pages/PlaceholderPage";
 import NotFoundPage from "./pages/NotFoundPage";
@@ -48,7 +50,8 @@ function App() {
             <Route index element={<DashboardPage />} />
             <Route path="orders" element={<AdminOrdersPage />} />
             <Route path="orders/:id" element={<AdminOrderDetailPage />} />
-            <Route path="products" element={<PlaceholderPage title="Quản lý thực đơn" />} />
+            <Route path="categories" element={<AdminCategoriesPage />} />
+            <Route path="products" element={<AdminProductsPage />} />
             <Route path="tables" element={<PlaceholderPage title="Quản lý bàn" />} />
             <Route element={<RoleRoute roles={["admin"]} />}>
               <Route path="users" element={<PlaceholderPage title="Quản lý người dùng" />} />
