@@ -45,8 +45,10 @@ const run = async () => {
   const catData = [
     { name: "Cà phê", description: "Cà phê pha phin, pha máy", displayOrder: 1 },
     { name: "Trà sữa", description: "Trà sữa & topping", displayOrder: 2 },
-    { name: "Nước ép", description: "Nước ép trái cây tươi", displayOrder: 3 },
-    { name: "Đồ ăn vặt", description: "Bánh, snack", displayOrder: 4 },
+    { name: "Trà trái cây", description: "Trà hoa quả tươi mát", displayOrder: 3 },
+    { name: "Nước ép", description: "Nước ép trái cây tươi", displayOrder: 4 },
+    { name: "Đồ ăn vặt", description: "Bánh, snack, gà rán", displayOrder: 5 },
+    { name: "Bánh ngọt", description: "Bánh ngọt & tráng miệng", displayOrder: 6 },
   ];
   const categories = await Category.create(
     catData.map((c) => ({ ...c, slug: slugify(c.name), isActive: true }))
@@ -84,19 +86,63 @@ const run = async () => {
       { label: "50%", priceModifier: 0 },
     ],
   };
+  const iceOption = {
+    name: "Mức đá",
+    type: "single",
+    required: false,
+    choices: [
+      { label: "100% đá", priceModifier: 0 },
+      { label: "70% đá", priceModifier: 0 },
+      { label: "50% đá", priceModifier: 0 },
+      { label: "Không đá", priceModifier: 0 },
+    ],
+  };
 
   // 5) Món
   const img = (id) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=600&q=80`;
   const productData = [
-    { name: "Cà phê đen", category: "Cà phê", basePrice: 20000, options: [sizeOption], isFeatured: true, preparationTime: 3, imageUrl: img("photo-1514432324607-a09d9b4aefdd") },
-    { name: "Cà phê sữa", category: "Cà phê", basePrice: 25000, options: [sizeOption], preparationTime: 3, imageUrl: img("photo-1461023058943-07fcbe16d735") },
-    { name: "Bạc xỉu", category: "Cà phê", basePrice: 30000, options: [sizeOption, sugarOption], preparationTime: 4, imageUrl: img("photo-1572442388796-11668a67e53d") },
-    { name: "Trà sữa trân châu đường đen", category: "Trà sữa", basePrice: 35000, options: [sizeOption, toppingOption, sugarOption], isFeatured: true, preparationTime: 5, imageUrl: img("photo-1558857563-b371033873b8") },
-    { name: "Trà sữa matcha", category: "Trà sữa", basePrice: 38000, options: [sizeOption, toppingOption, sugarOption], preparationTime: 5, imageUrl: img("photo-1536256263959-770b48d82b0a") },
-    { name: "Nước ép cam", category: "Nước ép", basePrice: 30000, options: [sizeOption], preparationTime: 4, imageUrl: img("photo-1613478223719-2ab802602423") },
-    { name: "Nước ép dưa hấu", category: "Nước ép", basePrice: 28000, options: [sizeOption], preparationTime: 4, imageUrl: img("photo-1622597467836-f3285f2131b8") },
+    // ── Cà phê ──
+    { name: "Cà phê đen", category: "Cà phê", basePrice: 20000, options: [sizeOption, iceOption], isFeatured: true, preparationTime: 3, imageUrl: img("photo-1514432324607-a09d9b4aefdd") },
+    { name: "Cà phê sữa", category: "Cà phê", basePrice: 25000, options: [sizeOption, iceOption], preparationTime: 3, imageUrl: img("photo-1461023058943-07fcbe16d735") },
+    { name: "Bạc xỉu", category: "Cà phê", basePrice: 30000, options: [sizeOption, sugarOption, iceOption], preparationTime: 4, imageUrl: img("photo-1572442388796-11668a67e53d") },
+    { name: "Espresso", category: "Cà phê", basePrice: 25000, options: [], preparationTime: 2, imageUrl: img("photo-1517701550927-30cf4ba1dba5") },
+    { name: "Americano", category: "Cà phê", basePrice: 30000, options: [sizeOption, iceOption], preparationTime: 3, imageUrl: img("photo-1568649929103-28ffbefaca1e") },
+    { name: "Cappuccino", category: "Cà phê", basePrice: 35000, options: [sizeOption], isFeatured: true, preparationTime: 4, imageUrl: img("photo-1521302080334-4bebac2763a6") },
+    { name: "Cà phê Latte", category: "Cà phê", basePrice: 40000, options: [sizeOption, sugarOption], preparationTime: 4, imageUrl: img("photo-1494314671902-399b18174975") },
+    { name: "Caramel Macchiato", category: "Cà phê", basePrice: 45000, options: [sizeOption, sugarOption], isFeatured: true, preparationTime: 5, imageUrl: img("photo-1510707577719-ae7c14805e3a") },
+    { name: "Cold Brew", category: "Cà phê", basePrice: 38000, options: [sizeOption, iceOption], preparationTime: 3, imageUrl: img("photo-1534778101976-62847782c213") },
+
+    // ── Trà sữa ──
+    { name: "Trà sữa trân châu đường đen", category: "Trà sữa", basePrice: 35000, options: [sizeOption, toppingOption, sugarOption, iceOption], isFeatured: true, preparationTime: 5, imageUrl: img("photo-1558857563-b371033873b8") },
+    { name: "Trà sữa matcha", category: "Trà sữa", basePrice: 38000, options: [sizeOption, toppingOption, sugarOption, iceOption], preparationTime: 5, imageUrl: img("photo-1536256263959-770b48d82b0a") },
+    { name: "Trà sữa truyền thống", category: "Trà sữa", basePrice: 30000, options: [sizeOption, toppingOption, sugarOption, iceOption], preparationTime: 4, imageUrl: img("photo-1571091718767-18b5b1457add") },
+    { name: "Trà sữa khoai môn", category: "Trà sữa", basePrice: 35000, options: [sizeOption, toppingOption, sugarOption, iceOption], preparationTime: 5, imageUrl: img("photo-1546173159-315724a31696") },
+    { name: "Hồng trà sữa", category: "Trà sữa", basePrice: 32000, options: [sizeOption, toppingOption, sugarOption, iceOption], preparationTime: 4, imageUrl: img("photo-1525385133512-2f3bdd039054") },
+    { name: "Trà sữa socola", category: "Trà sữa", basePrice: 35000, options: [sizeOption, toppingOption, sugarOption, iceOption], preparationTime: 5, imageUrl: img("photo-1558961363-fa8fdf82db35") },
+
+    // ── Trà trái cây ──
+    { name: "Trà đào cam sả", category: "Trà trái cây", basePrice: 35000, options: [sizeOption, sugarOption, iceOption], isFeatured: true, preparationTime: 4, imageUrl: img("photo-1597318181409-cf64d0b5d8a2") },
+    { name: "Trà vải", category: "Trà trái cây", basePrice: 33000, options: [sizeOption, sugarOption, iceOption], preparationTime: 4, imageUrl: img("photo-1499638673689-79a0b5115d87") },
+    { name: "Trà chanh giã tay", category: "Trà trái cây", basePrice: 28000, options: [sizeOption, sugarOption, iceOption], preparationTime: 3, imageUrl: img("photo-1622543925917-763c34d1a86e") },
+
+    // ── Nước ép ──
+    { name: "Nước ép cam", category: "Nước ép", basePrice: 30000, options: [sizeOption, iceOption], preparationTime: 4, imageUrl: img("photo-1613478223719-2ab802602423") },
+    { name: "Nước ép dưa hấu", category: "Nước ép", basePrice: 28000, options: [sizeOption, iceOption], preparationTime: 4, imageUrl: img("photo-1622597467836-f3285f2131b8") },
+    { name: "Nước ép táo", category: "Nước ép", basePrice: 30000, options: [sizeOption, iceOption], preparationTime: 4, imageUrl: img("photo-1505252585461-04db1eb84625") },
+    { name: "Nước ép dứa", category: "Nước ép", basePrice: 30000, options: [sizeOption, iceOption], preparationTime: 4, imageUrl: img("photo-1638176066666-ffb2f013c7dd") },
+    { name: "Nước ép cà rốt", category: "Nước ép", basePrice: 28000, options: [sizeOption, iceOption], preparationTime: 4, imageUrl: img("photo-1502741224143-90386d7f8c82") },
+
+    // ── Đồ ăn vặt ──
     { name: "Bánh flan", category: "Đồ ăn vặt", basePrice: 15000, options: [], preparationTime: 1, imageUrl: img("photo-1488477181946-6428a0291777") },
     { name: "Khoai tây chiên", category: "Đồ ăn vặt", basePrice: 25000, options: [], preparationTime: 6, imageUrl: img("photo-1630384060421-cb20d0e0649d") },
+    { name: "Gà rán giòn", category: "Đồ ăn vặt", basePrice: 45000, options: [], isFeatured: true, preparationTime: 8, imageUrl: img("photo-1606755962773-d324e0a13086") },
+    { name: "Xúc xích nướng", category: "Đồ ăn vặt", basePrice: 25000, options: [], preparationTime: 6, imageUrl: img("photo-1619881590738-a111d176d906") },
+    { name: "Bánh mì que", category: "Đồ ăn vặt", basePrice: 15000, options: [], preparationTime: 3, imageUrl: img("photo-1521305916504-4a1121188589") },
+
+    // ── Bánh ngọt ──
+    { name: "Bánh phô mai", category: "Bánh ngọt", basePrice: 35000, options: [], isFeatured: true, preparationTime: 1, imageUrl: img("photo-1551024601-bec78aea704b") },
+    { name: "Croissant bơ", category: "Bánh ngọt", basePrice: 25000, options: [], preparationTime: 1, imageUrl: img("photo-1486427944299-d1955d23e34d") },
+    { name: "Bánh su kem", category: "Bánh ngọt", basePrice: 20000, options: [], preparationTime: 1, imageUrl: img("photo-1578985545062-69928b1d9587") },
   ];
   const products = await Product.create(
     productData.map((p) => ({
