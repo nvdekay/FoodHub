@@ -6,8 +6,7 @@ import { ProtectedRoute, RoleRoute } from "./components/common/ProtectedRoute";
 import PageLoader from "./components/common/PageLoader";
 
 // Lazy-load các trang để chia nhỏ bundle (tải nhanh hơn)
-const LoginPage = lazy(() => import("./pages/LoginPage"));
-const RegisterPage = lazy(() => import("./pages/RegisterPage"));
+const AuthPage = lazy(() => import("./pages/AuthPage"));
 const MenuPage = lazy(() => import("./pages/MenuPage"));
 const CartPage = lazy(() => import("./pages/CartPage"));
 const OrdersPage = lazy(() => import("./pages/OrdersPage"));
@@ -33,8 +32,8 @@ function App() {
     <Suspense fallback={<PageLoader />}>
       <Routes>
         {/* Công khai */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/login" element={<AuthPage />} />
+        <Route path="/register" element={<AuthPage />} />
 
         {/* Storefront (khách) */}
         <Route element={<StorefrontLayout />}>
