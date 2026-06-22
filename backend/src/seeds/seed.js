@@ -86,16 +86,17 @@ const run = async () => {
   };
 
   // 5) Món
+  const img = (id) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=600&q=80`;
   const productData = [
-    { name: "Cà phê đen", category: "Cà phê", basePrice: 20000, options: [sizeOption], isFeatured: true, preparationTime: 3 },
-    { name: "Cà phê sữa", category: "Cà phê", basePrice: 25000, options: [sizeOption], preparationTime: 3 },
-    { name: "Bạc xỉu", category: "Cà phê", basePrice: 30000, options: [sizeOption, sugarOption], preparationTime: 4 },
-    { name: "Trà sữa trân châu đường đen", category: "Trà sữa", basePrice: 35000, options: [sizeOption, toppingOption, sugarOption], isFeatured: true, preparationTime: 5 },
-    { name: "Trà sữa matcha", category: "Trà sữa", basePrice: 38000, options: [sizeOption, toppingOption, sugarOption], preparationTime: 5 },
-    { name: "Nước ép cam", category: "Nước ép", basePrice: 30000, options: [sizeOption], preparationTime: 4 },
-    { name: "Nước ép dưa hấu", category: "Nước ép", basePrice: 28000, options: [sizeOption], preparationTime: 4 },
-    { name: "Bánh flan", category: "Đồ ăn vặt", basePrice: 15000, options: [], preparationTime: 1 },
-    { name: "Khoai tây chiên", category: "Đồ ăn vặt", basePrice: 25000, options: [], preparationTime: 6 },
+    { name: "Cà phê đen", category: "Cà phê", basePrice: 20000, options: [sizeOption], isFeatured: true, preparationTime: 3, imageUrl: img("photo-1514432324607-a09d9b4aefdd") },
+    { name: "Cà phê sữa", category: "Cà phê", basePrice: 25000, options: [sizeOption], preparationTime: 3, imageUrl: img("photo-1461023058943-07fcbe16d735") },
+    { name: "Bạc xỉu", category: "Cà phê", basePrice: 30000, options: [sizeOption, sugarOption], preparationTime: 4, imageUrl: img("photo-1572442388796-11668a67e53d") },
+    { name: "Trà sữa trân châu đường đen", category: "Trà sữa", basePrice: 35000, options: [sizeOption, toppingOption, sugarOption], isFeatured: true, preparationTime: 5, imageUrl: img("photo-1558857563-b371033873b8") },
+    { name: "Trà sữa matcha", category: "Trà sữa", basePrice: 38000, options: [sizeOption, toppingOption, sugarOption], preparationTime: 5, imageUrl: img("photo-1536256263959-770b48d82b0a") },
+    { name: "Nước ép cam", category: "Nước ép", basePrice: 30000, options: [sizeOption], preparationTime: 4, imageUrl: img("photo-1613478223719-2ab802602423") },
+    { name: "Nước ép dưa hấu", category: "Nước ép", basePrice: 28000, options: [sizeOption], preparationTime: 4, imageUrl: img("photo-1622597467836-f3285f2131b8") },
+    { name: "Bánh flan", category: "Đồ ăn vặt", basePrice: 15000, options: [], preparationTime: 1, imageUrl: img("photo-1488477181946-6428a0291777") },
+    { name: "Khoai tây chiên", category: "Đồ ăn vặt", basePrice: 25000, options: [], preparationTime: 6, imageUrl: img("photo-1630384060421-cb20d0e0649d") },
   ];
   const products = await Product.create(
     productData.map((p) => ({
@@ -103,6 +104,7 @@ const run = async () => {
       slug: slugify(p.name),
       categoryId: catBy[p.category]._id,
       basePrice: p.basePrice,
+      imageUrl: p.imageUrl,
       options: p.options,
       isAvailable: true,
       isFeatured: p.isFeatured || false,
