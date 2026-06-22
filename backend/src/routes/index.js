@@ -5,6 +5,7 @@ import categoryRoutes from "./categoryRoutes.js";
 import productRoutes from "./productRoutes.js";
 import tableRoutes from "./tableRoutes.js";
 import orderRoutes from "./orderRoutes.js";
+import dashboardRoutes from "./dashboardRoutes.js";
 
 /**
  * Router gốc cho toàn bộ API (tiền tố /api).
@@ -12,8 +13,9 @@ import orderRoutes from "./orderRoutes.js";
  *   Phase 3: authRoutes, userRoutes ✓
  *   Phase 4: categoryRoutes, productRoutes ✓
  *   Phase 5: tableRoutes ✓
- *   Phase 6: orderRoutes (phía khách) ✓ — Phase 7 bổ sung route nhân viên
- *   Phase 8: dashboardRoutes
+ *   Phase 6: orderRoutes (phía khách) ✓
+ *   Phase 7: orderRoutes (phía nhân viên) ✓
+ *   Phase 8: dashboardRoutes ✓
  */
 const router = Router();
 
@@ -27,7 +29,6 @@ router.use("/categories", categoryRoutes);
 router.use("/products", productRoutes);
 router.use("/tables", tableRoutes);
 router.use("/orders", orderRoutes);
-
-// router.use("/dashboard", dashboardRoutes);
+router.use("/dashboard", dashboardRoutes);
 
 export default router;
