@@ -9,3 +9,10 @@ export const getMyOrders = (params) => axiosClient.get("/orders/my", { params })
 
 // Chi tiết / theo dõi đơn (data) (F4)
 export const getOrder = (id) => axiosClient.get(`/orders/${id}`).then((r) => r.data);
+
+// Sửa đơn — chỉ khi pending (F4)
+export const updateOrder = (id, payload) =>
+  axiosClient.put(`/orders/${id}`, payload).then((r) => r.data);
+
+// Khách tự huỷ đơn — chỉ khi pending (F4)
+export const cancelOrder = (id) => axiosClient.delete(`/orders/${id}`).then((r) => r.data);
