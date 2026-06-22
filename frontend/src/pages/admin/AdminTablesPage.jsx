@@ -84,7 +84,13 @@ export default function AdminTablesPage() {
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {list.map((t) => (
-            <Card key={t._id} className={cn("p-4", !t.isActive && "opacity-60")}>
+            <Card
+              key={t._id}
+              className={cn(
+                "p-4 transition duration-200 hover:-translate-y-1 hover:scale-[1.02] hover:shadow-lg",
+                !t.isActive && "opacity-60"
+              )}
+            >
               <div className="flex items-start justify-between">
                 <div>
                   <p className="text-lg font-bold text-gray-800">Bàn {t.tableNumber}</p>
