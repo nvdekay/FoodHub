@@ -254,3 +254,156 @@ export const cancelOwnOrder = async (req, id) => {
   await tableService.syncTableStatus(existing.tableId);
   return order;
 };
+
+/* ===================== Nghiệp vụ phía nhân viên ===================== */
+
+// State machine (chốt #9 — theo bảng SRS, chặt)
+const TRANSITIONS = {
+  pending: ["confirmed", "cancelled"],
+  confirmed: ["preparing", "cancelled"],
+  preparing: ["ready"],
+  ready: ["completed"],
+  completed: [],
+  cancelled: [],
+};
+// Các trạng thái chế biến do endpoint /status xử lý (confirm & cancel có endpoint riêng)
+const CHEF_TARGETS = ["preparing", "ready", "completed"];
+
+/** FR-STAFF-01 — Danh sách tất cả đơn: lọc status/tableId/khoảng ngày, mới nhất trước. */
+export const listAllOrders = async ({ page, limit, status, tableId, from, to }) => {
+  const filter = {};
+  if (status) filter.status = status;
+  if (tableId) filter.tableId = tableId;
+  if (from || to) {
+    filter.createdAt = {};
+    if (from) filter.createdAt.$gte = new Date(from);
+    if (to) filter.createdAt.$lte = new Date(to);
+  }
+
+  const skip = (page - 1) * limit;
+  const [data, total] = await Promise.all([
+    Order.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
+    Order.countDocuments(filter),
+  ]);
+  return { data, total };
+};
+
+/** FR-STAFF-02 — Xác nhận đơn pending→confirmed; áp giảm giá tuỳ chọn (#5). */
+export const confirmOrder = async (req, id, { discountAmount } = {}) => {
+  const existing = await Order.findById(id);
+  if (!existing) throw ApiError.notFound("Không tìm thấy đơn");
+  if (existing.status !== "pending") {
+    throw ApiError.conflict("Chỉ xác nhận được đơn đang chờ (pending)", "INVALID_STATUS_TRANSITION");
+  }
+
+  const set = { status: "confirmed", confirmedBy: req.user.userId, confirmedAt: new Date() };
+  if (discountAmount !== undefined) {
+    if (discountAmount > existing.subtotal) {
+      throw ApiError.badRequest("Giảm giá vượt quá tổng tiền món", "DISCOUNT_TOO_LARGE");
+    }
+    set.discountAmount = discountAmount;
+    set.totalAmount = existing.subtotal - discountAmount;
+  }
+
+  const order = await Order.findOneAndUpdate(
+    { _id: id, status: "pending" },
+    {
+      $set: set,
+      $push: { statusHistory: { status: "confirmed", changedBy: req.user.userId, changedAt: new Date() } },
+    },
+    { new: true }
+  );
+  if (!order) throw ApiError.conflict("Đơn vừa thay đổi trạng thái", "INVALID_STATUS_TRANSITION");
+  return order;
+};
+
+/**
+ * FR-STAFF-03 — Cập nhật trạng thái chế biến (preparing/ready/completed) theo state machine.
+ * Khi completed: set completedAt + cộng soldCount EXACTLY-ONCE (#11) + đồng bộ bàn.
+ */
+export const updateOrderStatus = async (req, id, targetStatus) => {
+  if (!CHEF_TARGETS.includes(targetStatus)) {
+    throw ApiError.badRequest(
+      "Trạng thái không hợp lệ cho thao tác này (dùng /confirm hoặc /cancel)",
+      "INVALID_STATUS_TRANSITION"
+    );
+  }
+
+  const existing = await Order.findById(id);
+  if (!existing) throw ApiError.notFound("Không tìm thấy đơn");
+  const allowed = TRANSITIONS[existing.status] || [];
+  if (!allowed.includes(targetStatus)) {
+    throw ApiError.conflict(
+      `Không thể chuyển từ '${existing.status}' sang '${targetStatus}'`,
+      "INVALID_STATUS_TRANSITION"
+    );
+  }
+
+  const set = { status: targetStatus };
+  if (targetStatus === "completed") set.completedAt = new Date();
+
+  // Atomic theo trạng thái nguồn → đảm bảo chuyển & cộng soldCount đúng 1 lần
+  const order = await Order.findOneAndUpdate(
+    { _id: id, status: existing.status },
+    {
+      $set: set,
+      $push: { statusHistory: { status: targetStatus, changedBy: req.user.userId, changedAt: new Date() } },
+    },
+    { new: true }
+  );
+  if (!order) throw ApiError.conflict("Đơn vừa thay đổi trạng thái", "INVALID_STATUS_TRANSITION");
+
+  if (targetStatus === "completed") {
+    for (const it of order.items) {
+      await Product.updateOne({ _id: it.productId }, { $inc: { soldCount: it.quantity } });
+    }
+    await tableService.syncTableStatus(order.tableId);
+  }
+  return order;
+};
+
+/** FR-STAFF-04 — Nhân viên huỷ đơn (chỉ pending/confirmed). Đã paid → refunded (#4,#9). */
+export const cancelOrderByStaff = async (req, id, cancelReason) => {
+  const existing = await Order.findById(id);
+  if (!existing) throw ApiError.notFound("Không tìm thấy đơn");
+  if (!["pending", "confirmed"].includes(existing.status)) {
+    throw ApiError.conflict(
+      `Chỉ huỷ được đơn ở pending/confirmed (hiện: ${existing.status})`,
+      "INVALID_STATUS_TRANSITION"
+    );
+  }
+
+  const reason = cancelReason || "Nhân viên huỷ";
+  const set = { status: "cancelled", cancelReason: reason };
+  if (existing.paymentStatus === "paid") set.paymentStatus = "refunded";
+
+  const order = await Order.findOneAndUpdate(
+    { _id: id, status: existing.status },
+    {
+      $set: set,
+      $push: {
+        statusHistory: { status: "cancelled", changedBy: req.user.userId, changedAt: new Date(), note: reason },
+      },
+    },
+    { new: true }
+  );
+  if (!order) throw ApiError.conflict("Đơn vừa thay đổi trạng thái", "INVALID_STATUS_TRANSITION");
+
+  await tableService.syncTableStatus(order.tableId);
+  return order;
+};
+
+/** FR-STAFF-05 — Cập nhật thanh toán (unpaid→paid) + phương thức. */
+export const updatePayment = async (req, id, { paymentStatus, paymentMethod }) => {
+  const existing = await Order.findById(id);
+  if (!existing) throw ApiError.notFound("Không tìm thấy đơn");
+  if (existing.status === "cancelled") {
+    throw ApiError.conflict("Không thể cập nhật thanh toán cho đơn đã huỷ", "ORDER_CANCELLED");
+  }
+
+  const set = {};
+  if (paymentStatus !== undefined) set.paymentStatus = paymentStatus;
+  if (paymentMethod !== undefined) set.paymentMethod = paymentMethod;
+
+  return Order.findByIdAndUpdate(id, { $set: set }, { new: true, runValidators: true });
+};

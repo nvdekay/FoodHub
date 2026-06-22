@@ -24,3 +24,31 @@ export const updateOrderRules = [
   body("note").optional().isString(),
   body("tableId").optional().isMongoId().withMessage("tableId không hợp lệ"),
 ];
+
+/* ===== Phía nhân viên ===== */
+
+export const confirmOrderRules = [
+  body("discountAmount").optional().isInt({ min: 0 }).withMessage("discountAmount phải là số nguyên >= 0"),
+];
+
+export const updateStatusRules = [
+  body("status")
+    .notEmpty().withMessage("status là bắt buộc")
+    .bail()
+    .isIn(["preparing", "ready", "completed"]).withMessage("status phải là preparing/ready/completed"),
+];
+
+export const cancelOrderRules = [
+  body("cancelReason").optional().isString(),
+];
+
+export const paymentRules = [
+  body("paymentStatus").optional().isIn(["unpaid", "paid"]).withMessage("paymentStatus phải là unpaid/paid"),
+  body("paymentMethod").optional().isIn(["cash", "card", "ewallet"]).withMessage("paymentMethod không hợp lệ"),
+  body().custom((v) => {
+    if (v.paymentStatus === undefined && v.paymentMethod === undefined) {
+      throw new Error("Cần cung cấp paymentStatus hoặc paymentMethod");
+    }
+    return true;
+  }),
+];

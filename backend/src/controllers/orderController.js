@@ -35,3 +35,41 @@ export const cancelOwnOrder = asyncHandler(async (req, res) => {
   const order = await orderService.cancelOwnOrder(req, req.params.id);
   sendSuccess(res, order, "Đã huỷ đơn");
 });
+
+/* ===================== Phía nhân viên (👮) ===================== */
+
+// GET /api/orders 👮
+export const listAllOrders = asyncHandler(async (req, res) => {
+  const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+  const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 20, 1), 100);
+  const { status, tableId, from, to } = req.query;
+
+  const { data, total } = await orderService.listAllOrders({ page, limit, status, tableId, from, to });
+  sendPaginated(res, data, { page, limit, total });
+});
+
+// PATCH /api/orders/:id/confirm 👮
+export const confirmOrder = asyncHandler(async (req, res) => {
+  const order = await orderService.confirmOrder(req, req.params.id, {
+    discountAmount: req.body.discountAmount,
+  });
+  sendSuccess(res, order, "Đã xác nhận đơn");
+});
+
+// PATCH /api/orders/:id/status 👮
+export const updateStatus = asyncHandler(async (req, res) => {
+  const order = await orderService.updateOrderStatus(req, req.params.id, req.body.status);
+  sendSuccess(res, order, "Đã cập nhật trạng thái đơn");
+});
+
+// PATCH /api/orders/:id/cancel 👮
+export const cancelOrder = asyncHandler(async (req, res) => {
+  const order = await orderService.cancelOrderByStaff(req, req.params.id, req.body.cancelReason);
+  sendSuccess(res, order, "Đã huỷ đơn");
+});
+
+// PATCH /api/orders/:id/payment 👮
+export const updatePayment = asyncHandler(async (req, res) => {
+  const order = await orderService.updatePayment(req, req.params.id, req.body);
+  sendSuccess(res, order, "Đã cập nhật thanh toán");
+});
