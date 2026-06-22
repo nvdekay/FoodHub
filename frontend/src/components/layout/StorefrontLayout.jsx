@@ -1,14 +1,17 @@
+import { useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 import { ShoppingCart } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
 import { Button } from "../ui";
+import CartDrawer from "../../features/cart/CartDrawer";
 import UserMenu from "./UserMenu";
 
 /** Layout cho khu vực khách hàng (storefront). */
 export default function StorefrontLayout() {
   const { isAuthenticated, isStaff } = useAuth();
   const { totalCount } = useCart();
+  const [cartOpen, setCartOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-bg">
@@ -19,8 +22,8 @@ export default function StorefrontLayout() {
           </Link>
 
           <div className="flex items-center gap-2">
-            <Link
-              to="/cart"
+            <button
+              onClick={() => setCartOpen(true)}
               className="relative rounded-lg p-2 text-gray-600 transition hover:bg-gray-100"
               aria-label="Giỏ hàng"
             >
@@ -30,7 +33,7 @@ export default function StorefrontLayout() {
                   {totalCount}
                 </span>
               )}
-            </Link>
+            </button>
             {isStaff && (
               <Link to="/admin">
                 <Button variant="ghost" size="sm">
@@ -59,6 +62,8 @@ export default function StorefrontLayout() {
       <main className="mx-auto max-w-5xl px-4 py-6">
         <Outlet />
       </main>
+
+      <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </div>
   );
 }

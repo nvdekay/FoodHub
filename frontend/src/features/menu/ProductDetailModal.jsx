@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
-import { Minus, Plus } from "lucide-react";
 import toast from "react-hot-toast";
-import { Modal, Button, Textarea } from "../../components/ui";
+import { Modal, Button, Textarea, QuantityStepper } from "../../components/ui";
 import { formatVND } from "../../lib/format";
 import { useCart } from "../../context/CartContext";
 import { cn } from "../../lib/cn";
@@ -136,23 +135,7 @@ export default function ProductDetailModal({ product, open, onClose }) {
         />
 
         <div className="flex items-center justify-between border-t border-gray-100 pt-4">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-              className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50"
-              aria-label="Giảm"
-            >
-              <Minus className="h-4 w-4" />
-            </button>
-            <span className="w-6 text-center font-medium">{quantity}</span>
-            <button
-              onClick={() => setQuantity((q) => q + 1)}
-              className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50"
-              aria-label="Tăng"
-            >
-              <Plus className="h-4 w-4" />
-            </button>
-          </div>
+          <QuantityStepper value={quantity} onChange={setQuantity} />
           <Button onClick={onAdd}>Thêm vào giỏ · {formatVND(total)}</Button>
         </div>
       </div>

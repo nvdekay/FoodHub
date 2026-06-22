@@ -5,6 +5,7 @@ import { ProtectedRoute, RoleRoute } from "./components/common/ProtectedRoute";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import MenuPage from "./pages/MenuPage";
+import CartPage from "./pages/CartPage";
 import DesignSystemPage from "./pages/DesignSystemPage";
 import PlaceholderPage from "./pages/PlaceholderPage";
 import NotFoundPage from "./pages/NotFoundPage";
@@ -27,7 +28,7 @@ function App() {
         <Route path="/" element={<MenuPage />} />
         <Route path="/design-system" element={<DesignSystemPage />} />
         <Route element={<ProtectedRoute />}>
-          <Route path="/cart" element={<PlaceholderPage title="Giỏ hàng" />} />
+          <Route path="/cart" element={<CartPage />} />
           <Route path="/orders" element={<PlaceholderPage title="Đơn của tôi" />} />
           <Route path="/orders/:id" element={<PlaceholderPage title="Chi tiết đơn" />} />
           <Route path="/profile" element={<PlaceholderPage title="Hồ sơ" />} />

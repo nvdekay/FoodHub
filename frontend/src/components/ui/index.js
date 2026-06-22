@@ -9,4 +9,6 @@ export { default as Spinner } from "./Spinner";
 export { default as Skeleton } from "./Skeleton";
 export { default as EmptyState } from "./EmptyState";
 export { default as Modal } from "./Modal";
+export { default as Drawer } from "./Drawer";
 export { default as Pagination } from "./Pagination";
+export { default as QuantityStepper } from "./QuantityStepper";
