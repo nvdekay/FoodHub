@@ -1,6 +1,8 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { LayoutDashboard, ReceiptText, Coffee, Armchair, Users } from "lucide-react";
 import { cn } from "../../lib/cn";
+import { useAuth } from "../../context/AuthContext";
+import UserMenu from "./UserMenu";
 
 const NAV = [
   { to: "/admin", label: "Tổng quan", icon: LayoutDashboard, end: true },
@@ -12,6 +14,9 @@ const NAV = [
 
 /** Layout back-office (nhân viên/quản trị). Sidebar tối giản — sẽ mở rộng ở F5. */
 export default function AdminLayout() {
+  const { isAdmin } = useAuth();
+  const navItems = NAV.filter((n) => !n.adminOnly || isAdmin);
+
   return (
     <div className="flex min-h-screen bg-bg">
       <aside className="hidden w-56 shrink-0 border-r border-gray-100 bg-white md:block">
@@ -19,7 +24,7 @@ export default function AdminLayout() {
           <span className="text-2xl">🍵</span> FoodHub
         </div>
         <nav className="space-y-1 px-3">
-          {NAV.map(({ to, label, icon: Icon, end }) => (
+          {navItems.map(({ to, label, icon: Icon, end }) => (
             <NavLink
               key={to}
               to={to}
@@ -40,6 +45,7 @@ export default function AdminLayout() {
       <div className="flex-1">
         <header className="flex items-center justify-between border-b border-gray-100 bg-white px-5 py-3">
           <h1 className="text-base font-semibold text-gray-700">Bảng điều khiển</h1>
+          <UserMenu variant="admin" />
         </header>
         <main className="p-5">
           <Outlet />
