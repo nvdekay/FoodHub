@@ -34,8 +34,12 @@ const run = async () => {
     { fullName: "Nhân Viên A", email: "staff@foodhub.com", phone: "0900000002", passwordHash, role: "staff" },
     { fullName: "Nguyễn Văn A", email: "customer@foodhub.com", phone: "0912345678", passwordHash, role: "customer" },
     { fullName: "Trần Thị B", email: "customer2@foodhub.com", phone: "0987654321", passwordHash, role: "customer" },
+    // Tài khoản test tiện dụng (gmail) — cùng mật khẩu chung
+    { fullName: "Admin Gmail", email: "admin@gmail.com", phone: "0900000003", passwordHash, role: "admin" },
+    { fullName: "Staff Gmail", email: "staff@gmail.com", phone: "0900000004", passwordHash, role: "staff" },
+    { fullName: "User Gmail", email: "user@gmail.com", phone: "0900000005", passwordHash, role: "customer" },
   ]);
-  console.log("👤 Đã tạo 4 tài khoản (admin/staff/2 customer)");
+  console.log("👤 Đã tạo 7 tài khoản (2 admin/2 staff/3 customer)");
 
   // 3) Danh mục
   const catData = [
@@ -122,9 +126,9 @@ const run = async () => {
   console.log("\n✅ Seed hoàn tất!");
   console.log("──────────────────────────────");
   console.log("Tài khoản mẫu (mật khẩu chung: " + PASSWORD + ")");
-  console.log("  • admin@foodhub.com     (admin)");
-  console.log("  • staff@foodhub.com     (staff)");
-  console.log("  • customer@foodhub.com  (customer)");
+  console.log("  • admin@foodhub.com     (admin)   • admin@gmail.com  (admin)");
+  console.log("  • staff@foodhub.com     (staff)   • staff@gmail.com  (staff)");
+  console.log("  • customer@foodhub.com  (customer) • user@gmail.com  (customer)");
   console.log("──────────────────────────────");
 
   await mongoose.disconnect();
