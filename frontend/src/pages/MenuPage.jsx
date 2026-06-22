@@ -13,8 +13,8 @@ const catOf = (p) => p.categoryId?._id || p.categoryId;
 
 function GridSkeleton() {
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-      {Array.from({ length: 8 }).map((_, i) => (
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+      {Array.from({ length: 12 }).map((_, i) => (
         <Card key={i} className="p-3">
           <Skeleton className="h-28 w-full sm:h-32" />
           <Skeleton className="mt-2 h-4 w-3/4" />
@@ -56,8 +56,8 @@ export default function MenuPage() {
     <div className="space-y-6">
       <MenuHero search={search} onSearch={setSearch} />
 
-      {/* Chips danh mục — dính khi cuộn */}
-      <div className="sticky top-14 z-20 -mx-4 bg-bg/85 px-4 py-2 backdrop-blur">
+      {/* Chips danh mục — dính khi cuộn (full-bleed theo padding layout) */}
+      <div className="sticky top-14 z-20 -mx-4 bg-bg/85 px-4 py-2 backdrop-blur sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
         <CategoryChips categories={categories} value={activeCat} onChange={setActiveCat} />
       </div>
 
@@ -74,7 +74,7 @@ export default function MenuPage() {
             <h2 className="mb-4 text-lg font-bold text-gray-800">
               Kết quả cho “{debounced}” ({searchResults.length})
             </h2>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
               {searchResults.map((p) => (
                 <ProductCard key={p._id} product={p} onSelect={setSelected} />
               ))}

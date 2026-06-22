@@ -65,7 +65,7 @@ export default function CartPage() {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="mx-auto max-w-6xl space-y-5">
       <div className="flex items-center gap-3">
         <button
           onClick={() => navigate("/")}

@@ -29,7 +29,7 @@ export default function OrdersPage() {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="mx-auto max-w-4xl space-y-5">
       <div>
         <h1 className="text-2xl font-bold text-gray-800">Đơn của tôi</h1>
         <p className="text-sm text-gray-500">Theo dõi trạng thái các đơn đã đặt</p>
