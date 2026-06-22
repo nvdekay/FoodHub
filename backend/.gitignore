@@ -2,7 +2,3 @@ node_modules/
 .env
 *.log
 .DS_Store
-
-# Uploaded images (giữ thư mục, bỏ nội dung)
-uploads/*
-!uploads/.gitkeep

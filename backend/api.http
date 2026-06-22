@@ -1,0 +1,277 @@
+### FoodHub API — REST Client collection
+### Dùng với extension "REST Client" (VS Code). Bấm "Send Request" trên mỗi block.
+### Sau khi login, copy token vào biến @token bên dưới.
+
+@baseUrl = http://localhost:5050/api
+@token = PASTE_ACCESS_TOKEN_HERE
+
+############################################
+# AUTH
+############################################
+
+### Đăng ký
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "fullName": "Người Dùng Mới",
+  "email": "newuser@foodhub.com",
+  "phone": "0911222333",
+  "password": "123456"
+}
+
+### Đăng nhập (admin mẫu) — copy data.token vào @token
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@foodhub.com",
+  "password": "123456"
+}
+
+### Đăng nhập customer mẫu
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "customer@foodhub.com",
+  "password": "123456"
+}
+
+############################################
+# USER
+############################################
+
+### Hồ sơ của tôi
+GET {{baseUrl}}/users/me
+Authorization: Bearer {{token}}
+
+### Cập nhật hồ sơ / đổi mật khẩu
+PUT {{baseUrl}}/users/me
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "fullName": "Tên Mới"
+}
+
+### [Admin] Danh sách người dùng
+GET {{baseUrl}}/users?page=1&limit=20
+Authorization: Bearer {{token}}
+
+### [Admin] Khoá / mở khoá / đổi role
+PATCH {{baseUrl}}/users/USER_ID/status
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "isActive": false
+}
+
+############################################
+# CATEGORY
+############################################
+
+### Danh sách danh mục (công khai)
+GET {{baseUrl}}/categories
+
+### [Staff] Tạo danh mục
+POST {{baseUrl}}/categories
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Sinh tố",
+  "description": "Sinh tố trái cây",
+  "imageUrl": "https://example.com/smoothie.jpg",
+  "displayOrder": 5
+}
+
+### [Staff] Cập nhật danh mục
+PUT {{baseUrl}}/categories/CATEGORY_ID
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "displayOrder": 10
+}
+
+### [Staff] Xoá / ẩn danh mục
+DELETE {{baseUrl}}/categories/CATEGORY_ID
+Authorization: Bearer {{token}}
+
+############################################
+# PRODUCT
+############################################
+
+### Danh sách món (lọc + tìm kiếm + phân trang)
+GET {{baseUrl}}/products?page=1&limit=20&search=trà&sort=newest
+
+### Chi tiết món
+GET {{baseUrl}}/products/PRODUCT_ID
+
+### [Staff] Thêm món (có options)
+POST {{baseUrl}}/products
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Trà đào cam sả",
+  "categoryId": "CATEGORY_ID",
+  "basePrice": 35000,
+  "imageUrl": "https://example.com/tradao.jpg",
+  "options": [
+    {
+      "name": "Size", "type": "single", "required": true,
+      "choices": [ { "label": "Size M", "priceModifier": 0 }, { "label": "Size L", "priceModifier": 5000 } ]
+    }
+  ]
+}
+
+### [Staff] Cập nhật món
+PUT {{baseUrl}}/products/PRODUCT_ID
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "basePrice": 40000
+}
+
+### [Staff] Ẩn món
+DELETE {{baseUrl}}/products/PRODUCT_ID
+Authorization: Bearer {{token}}
+
+############################################
+# TABLE
+############################################
+
+### Danh sách bàn
+GET {{baseUrl}}/tables
+Authorization: Bearer {{token}}
+
+### [Staff] Tạo bàn
+POST {{baseUrl}}/tables
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "tableNumber": "B07",
+  "capacity": 4
+}
+
+### [Staff] Cập nhật bàn (đặt reserved)
+PUT {{baseUrl}}/tables/TABLE_ID
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "reserved"
+}
+
+### [Staff] Xoá bàn
+DELETE {{baseUrl}}/tables/TABLE_ID
+Authorization: Bearer {{token}}
+
+############################################
+# ORDER — phía khách
+############################################
+
+### Tạo đơn (token = customer)
+POST {{baseUrl}}/orders
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "tableId": "TABLE_ID",
+  "note": "Giao nhanh giúp em",
+  "items": [
+    {
+      "productId": "PRODUCT_ID",
+      "quantity": 2,
+      "selectedOptions": [
+        { "groupName": "Size", "choiceLabel": "Size L" }
+      ],
+      "note": "Ít đá"
+    }
+  ]
+}
+
+### Đơn của tôi
+GET {{baseUrl}}/orders/my
+Authorization: Bearer {{token}}
+
+### Chi tiết đơn
+GET {{baseUrl}}/orders/ORDER_ID
+Authorization: Bearer {{token}}
+
+### Sửa đơn (chỉ khi pending)
+PUT {{baseUrl}}/orders/ORDER_ID
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "items": [
+    { "productId": "PRODUCT_ID", "quantity": 3, "selectedOptions": [ { "groupName": "Size", "choiceLabel": "Size L" } ] }
+  ]
+}
+
+### Khách tự huỷ đơn (chỉ khi pending)
+DELETE {{baseUrl}}/orders/ORDER_ID
+Authorization: Bearer {{token}}
+
+############################################
+# ORDER — phía nhân viên (👮)
+############################################
+
+### [Staff] Danh sách tất cả đơn (lọc)
+GET {{baseUrl}}/orders?status=pending&page=1&limit=20
+Authorization: Bearer {{token}}
+
+### [Staff] Xác nhận đơn (kèm giảm giá tuỳ chọn)
+PATCH {{baseUrl}}/orders/ORDER_ID/confirm
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "discountAmount": 5000
+}
+
+### [Staff] Cập nhật trạng thái chế biến
+PATCH {{baseUrl}}/orders/ORDER_ID/status
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "preparing"
+}
+
+### [Staff] Huỷ đơn
+PATCH {{baseUrl}}/orders/ORDER_ID/cancel
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "cancelReason": "Hết nguyên liệu"
+}
+
+### [Staff] Cập nhật thanh toán
+PATCH {{baseUrl}}/orders/ORDER_ID/payment
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "paymentStatus": "paid",
+  "paymentMethod": "cash"
+}
+
+############################################
+# DASHBOARD (👮)
+############################################
+
+### Thống kê tổng quan
+GET {{baseUrl}}/dashboard/summary
+Authorization: Bearer {{token}}
+
+### Món bán chạy
+GET {{baseUrl}}/dashboard/top-products?limit=10
+Authorization: Bearer {{token}}

@@ -15,20 +15,21 @@ A full-stack food ordering demo.
 ```bash
 cd backend
 npm install
-cp .env.example .env   # adjust if needed
+cp .env.example .env   # adjust JWT_SECRET if needed
+npm run seed           # seed sample data (accounts, menu, tables)
 npm run dev            # starts on http://localhost:5050
 ```
 
-### API endpoints
+Sample accounts (password `123456`): `admin@foodhub.com`, `staff@foodhub.com`, `customer@foodhub.com`.
 
-| Method | Path             | Description        |
-| ------ | ---------------- | ------------------ |
-| GET    | `/api/health`    | Health check       |
-| GET    | `/api/foods`     | List all foods     |
-| GET    | `/api/foods/:id` | Get one food       |
-| POST   | `/api/foods`     | Create a food      |
-| PUT    | `/api/foods/:id` | Update a food      |
-| DELETE | `/api/foods/:id` | Delete a food      |
+### API
+
+The backend exposes 31 REST endpoints across Auth/User, Category, Product, Table,
+Order (customer + staff) and Dashboard — see **[backend/README.md](backend/README.md)**
+for the full list and **backend/api.http** to try them with the VS Code REST Client.
+
+Business spec: [docs/SRS_QuanLyDatMon.md](docs/SRS_QuanLyDatMon.md) ·
+DB design: [docs/db.md](docs/db.md) · Plan: [docs/plan.md](docs/plan.md).
 
 ## Frontend
 

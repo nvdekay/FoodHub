@@ -1,14 +1,9 @@
-import path from "path";
-import { fileURLToPath } from "url";
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 
 import apiRouter from "./routes/index.js";
 import { notFoundHandler, errorHandler } from "./middlewares/errorHandler.js";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -25,10 +20,6 @@ app.use(express.urlencoded({ extended: true }));
 if (process.env.NODE_ENV !== "production") {
   app.use(morgan("dev"));
 }
-
-// Phục vụ ảnh upload tĩnh tại /uploads
-const uploadDir = process.env.UPLOAD_DIR || "uploads";
-app.use("/uploads", express.static(path.join(__dirname, "..", uploadDir)));
 
 // --- Health check gốc ---
 app.get("/", (req, res) => {
