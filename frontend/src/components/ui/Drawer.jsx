@@ -1,4 +1,4 @@
-import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react";
 import { X } from "lucide-react";
 import { cn } from "../../lib/cn";
 
@@ -9,10 +9,18 @@ import { cn } from "../../lib/cn";
 export default function Drawer({ open, onClose, title, children, footer, className }) {
   return (
     <Dialog open={open} onClose={onClose} className="relative z-50">
-      <div className="fixed inset-0 bg-black/40" aria-hidden="true" />
-      <div className="fixed inset-0 flex justify-end">
+      <DialogBackdrop
+        transition
+        className="fixed inset-0 bg-black/40 transition-opacity duration-300 ease-out data-[closed]:opacity-0"
+      />
+      <div className="fixed inset-0 flex justify-end overflow-hidden">
         <DialogPanel
-          className={cn("flex h-full w-full max-w-md flex-col bg-white shadow-xl", className)}
+          transition
+          className={cn(
+            "flex h-full w-full max-w-md flex-col bg-white shadow-xl",
+            "transition duration-300 ease-out data-[closed]:translate-x-full",
+            className
+          )}
         >
           <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
             <DialogTitle className="text-lg font-semibold">{title}</DialogTitle>

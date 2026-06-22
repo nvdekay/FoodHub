@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { Link, Outlet } from "react-router-dom";
 import { ShoppingCart } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
 import { Button } from "../ui";
 import CartDrawer from "../../features/cart/CartDrawer";
+import PageTransition from "../common/PageTransition";
+import PageLoader from "../common/PageLoader";
 import UserMenu from "./UserMenu";
 
 /** Layout cho khu vực khách hàng (storefront). */
@@ -60,7 +62,11 @@ export default function StorefrontLayout() {
       </header>
 
       <main className="mx-auto max-w-5xl px-4 py-6">
-        <Outlet />
+        <Suspense fallback={<PageLoader />}>
+          <PageTransition>
+            <Outlet />
+          </PageTransition>
+        </Suspense>
       </main>
 
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />

@@ -1,15 +1,21 @@
-import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react";
 import { X } from "lucide-react";
 import { cn } from "../../lib/cn";
 
 export default function Modal({ open, onClose, title, children, className }) {
   return (
     <Dialog open={open} onClose={onClose} className="relative z-50">
-      <div className="fixed inset-0 bg-black/40" aria-hidden="true" />
+      <DialogBackdrop
+        transition
+        className="fixed inset-0 bg-black/40 transition-opacity duration-200 ease-out data-[closed]:opacity-0"
+      />
       <div className="fixed inset-0 flex items-end justify-center p-0 sm:items-center sm:p-4">
         <DialogPanel
+          transition
           className={cn(
             "max-h-[90vh] w-full overflow-y-auto rounded-t-2xl bg-white shadow-xl sm:max-w-lg sm:rounded-2xl",
+            "transition duration-200 ease-out data-[closed]:opacity-0 data-[closed]:translate-y-6",
+            "sm:data-[closed]:translate-y-0 sm:data-[closed]:scale-95",
             className
           )}
         >

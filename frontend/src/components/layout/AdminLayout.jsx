@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { NavLink, Outlet } from "react-router-dom";
-import { Dialog, DialogPanel } from "@headlessui/react";
+import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import { LayoutDashboard, ReceiptText, Coffee, Tags, Armchair, Users, Menu as MenuIcon } from "lucide-react";
 import { cn } from "../../lib/cn";
 import { useAuth } from "../../context/AuthContext";
+import PageTransition from "../common/PageTransition";
+import PageLoader from "../common/PageLoader";
 import UserMenu from "./UserMenu";
 
 const NAV = [
@@ -60,9 +62,15 @@ export default function AdminLayout() {
 
       {/* Drawer mobile */}
       <Dialog open={mobileOpen} onClose={() => setMobileOpen(false)} className="relative z-50 md:hidden">
-        <div className="fixed inset-0 bg-black/40" aria-hidden="true" />
-        <div className="fixed inset-0 flex">
-          <DialogPanel className="w-64 bg-white shadow-xl">
+        <DialogBackdrop
+          transition
+          className="fixed inset-0 bg-black/40 transition-opacity duration-300 ease-out data-[closed]:opacity-0"
+        />
+        <div className="fixed inset-0 flex overflow-hidden">
+          <DialogPanel
+            transition
+            className="w-64 bg-white shadow-xl transition duration-300 ease-out data-[closed]:-translate-x-full"
+          >
             <SidebarNav items={navItems} onNavigate={() => setMobileOpen(false)} />
           </DialogPanel>
         </div>
@@ -83,7 +91,11 @@ export default function AdminLayout() {
           <UserMenu variant="admin" />
         </header>
         <main className="p-5">
-          <Outlet />
+          <Suspense fallback={<PageLoader />}>
+            <PageTransition>
+              <Outlet />
+            </PageTransition>
+          </Suspense>
         </main>
       </div>
     </div>

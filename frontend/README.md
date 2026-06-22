@@ -1,16 +1,69 @@
-# React + Vite
+# FoodHub — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Giao diện đặt món tại quán (storefront cho khách) + back-office (nhân viên/quản trị).
+Tích hợp đầy đủ 31 endpoint backend, phủ 3 vai trò: **khách · nhân viên · quản trị**.
 
-Currently, two official plugins are available:
+## Tech stack
+- **React 19 · Vite 8 · Tailwind CSS 4**
+- **React Router v7** — routing + nested layout + protected route theo role
+- **@tanstack/react-query** — server state (cache, loading/error, invalidate sau mutation)
+- **React Context** — auth & giỏ hàng (localStorage)
+- **react-hook-form + zod** — form & validate (auth, hồ sơ)
+- **Headless UI** — Modal/Drawer/Menu (a11y + transition)
+- **axios** (interceptors) · **lucide-react** · **react-hot-toast** · **date-fns** · **clsx + tailwind-merge**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Chạy dự án
+```bash
+npm install
+npm run dev       # chạy dev (http://localhost:5173)
+npm run build     # build production
+npm run preview   # xem thử bản build
+npm run lint      # kiểm tra eslint
+```
+Cấu hình API qua biến môi trường `VITE_API_URL` (mặc định `http://localhost:5050/api`) — xem `.env.example`.
 
-## React Compiler
+## Cấu trúc thư mục
+```
+src/
+├── api/          # service modules bọc axios (auth, user, category, product, table, order, dashboard)
+├── hooks/        # React Query hooks (useMenu, useOrders, useStaffOrders, useAdminMenu, ...)
+├── context/      # AuthContext, CartContext
+├── components/
+│   ├── ui/       # design system (Button, Input, Modal, Drawer, StatusPill, QuantityStepper, ...)
+│   ├── layout/   # StorefrontLayout, AdminLayout, UserMenu
+│   └── common/   # ProtectedRoute/RoleRoute, PageTransition, PageLoader
+├── features/     # nhóm theo nghiệp vụ (menu, cart, orders, admin-orders, admin-menu, admin-tables, dashboard)
+├── pages/        # trang ghép route (storefront + admin/)
+├── lib/          # format (VND/ngày), constants (enum), statusConfig, cn, navigation
+└── App.jsx       # router (lazy-load trang) · main.jsx (providers)
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Lộ trình (F0 → F10)
+| Phase | Nội dung |
+| --- | --- |
+| F0 | Setup & Design System |
+| F1 | Auth & nền điều hướng |
+| F2 | Khách: Duyệt thực đơn |
+| F3 | Khách: Giỏ hàng & Đặt món |
+| F4 | Khách: Đơn của tôi & Theo dõi |
+| F5 | Back-office: Shell & Dashboard |
+| F6 | Nhân viên: Xử lý đơn (state machine) |
+| F7 | Nhân viên: Quản lý thực đơn (CRUD + options builder) |
+| F8 | Nhân viên: Quản lý bàn |
+| F9 | Quản trị: Quản lý người dùng |
+| F10 | Hoàn thiện UX & QA (lazy-load, chuyển trang mượt, a11y) |
 
-## Expanding the ESLint configuration
+## Đặc điểm UX
+- **4 trạng thái** mỗi màn: loading (skeleton) · empty · error · success.
+- **Chuyển trang mượt**: hiệu ứng trượt-mờ + cuộn về đầu khi đổi route; Modal/Drawer có transition.
+- **Lazy-load** từng trang để chia nhỏ bundle, tải nhanh.
+- **A11y**: focus ring, aria, tôn trọng `prefers-reduced-motion`.
+- **Định dạng locale vi**: tiền VND & ngày giờ.
+- Token tự gắn vào request; 401/khoá → tự đăng xuất; route bảo vệ theo role.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Tài khoản mẫu (sau khi seed backend)
+| Vai trò | Email | Mật khẩu |
+| --- | --- | --- |
+| Admin | admin@foodhub.com | 123456 |
+| Nhân viên | staff@foodhub.com | 123456 |
+| Khách | customer@foodhub.com | 123456 |

@@ -26,7 +26,10 @@ export default function UserMenu({ variant = "storefront" }) {
         <span className="hidden max-w-32 truncate sm:block">{user?.fullName}</span>
         <ChevronDown className="h-4 w-4 text-gray-400" />
       </MenuButton>
-      <MenuItems className="absolute right-0 z-40 mt-2 w-52 overflow-hidden rounded-lg border border-gray-100 bg-white py-1 shadow-lg focus:outline-none">
+      <MenuItems
+        transition
+        className="absolute right-0 z-40 mt-2 w-52 origin-top-right overflow-hidden rounded-lg border border-gray-100 bg-white py-1 shadow-lg transition duration-150 ease-out focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0"
+      >
         <div className="border-b border-gray-100 px-4 py-2">
           <p className="truncate text-sm font-medium text-gray-800">{user?.fullName}</p>
           <p className="truncate text-xs text-gray-500">{user?.email}</p>

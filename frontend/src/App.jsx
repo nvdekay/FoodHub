@@ -1,70 +1,75 @@
+import { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import StorefrontLayout from "./components/layout/StorefrontLayout";
 import AdminLayout from "./components/layout/AdminLayout";
 import { ProtectedRoute, RoleRoute } from "./components/common/ProtectedRoute";
-import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
-import MenuPage from "./pages/MenuPage";
-import CartPage from "./pages/CartPage";
-import OrdersPage from "./pages/OrdersPage";
-import OrderDetailPage from "./pages/OrderDetailPage";
-import ProfilePage from "./pages/ProfilePage";
-import DashboardPage from "./pages/DashboardPage";
-import AdminOrdersPage from "./pages/admin/AdminOrdersPage";
-import AdminOrderDetailPage from "./pages/admin/AdminOrderDetailPage";
-import AdminCategoriesPage from "./pages/admin/AdminCategoriesPage";
-import AdminProductsPage from "./pages/admin/AdminProductsPage";
-import AdminTablesPage from "./pages/admin/AdminTablesPage";
-import AdminUsersPage from "./pages/admin/AdminUsersPage";
-import DesignSystemPage from "./pages/DesignSystemPage";
-import NotFoundPage from "./pages/NotFoundPage";
-import ForbiddenPage from "./pages/ForbiddenPage";
+import PageLoader from "./components/common/PageLoader";
+
+// Lazy-load các trang để chia nhỏ bundle (tải nhanh hơn)
+const LoginPage = lazy(() => import("./pages/LoginPage"));
+const RegisterPage = lazy(() => import("./pages/RegisterPage"));
+const MenuPage = lazy(() => import("./pages/MenuPage"));
+const CartPage = lazy(() => import("./pages/CartPage"));
+const OrdersPage = lazy(() => import("./pages/OrdersPage"));
+const OrderDetailPage = lazy(() => import("./pages/OrderDetailPage"));
+const ProfilePage = lazy(() => import("./pages/ProfilePage"));
+const DashboardPage = lazy(() => import("./pages/DashboardPage"));
+const AdminOrdersPage = lazy(() => import("./pages/admin/AdminOrdersPage"));
+const AdminOrderDetailPage = lazy(() => import("./pages/admin/AdminOrderDetailPage"));
+const AdminCategoriesPage = lazy(() => import("./pages/admin/AdminCategoriesPage"));
+const AdminProductsPage = lazy(() => import("./pages/admin/AdminProductsPage"));
+const AdminTablesPage = lazy(() => import("./pages/admin/AdminTablesPage"));
+const AdminUsersPage = lazy(() => import("./pages/admin/AdminUsersPage"));
+const DesignSystemPage = lazy(() => import("./pages/DesignSystemPage"));
+const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
+const ForbiddenPage = lazy(() => import("./pages/ForbiddenPage"));
 
 /**
- * Router (F1). Trang thật bổ sung dần:
- *   F2-F4: storefront (menu, giỏ, đơn, hồ sơ)
- *   F5-F9: back-office (dashboard, orders, products, tables, users)
+ * Router (F10). Layout giữ eager để điều hướng trong cùng khu vực không nháy;
+ * các trang lazy-load, mỗi layout có Suspense + hiệu ứng chuyển trang riêng.
  */
 function App() {
   return (
-    <Routes>
-      {/* Công khai */}
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
+    <Suspense fallback={<PageLoader />}>
+      <Routes>
+        {/* Công khai */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
 
-      {/* Storefront (khách) */}
-      <Route element={<StorefrontLayout />}>
-        <Route path="/" element={<MenuPage />} />
-        <Route path="/design-system" element={<DesignSystemPage />} />
-        <Route element={<ProtectedRoute />}>
-          <Route path="/cart" element={<CartPage />} />
-          <Route path="/orders" element={<OrdersPage />} />
-          <Route path="/orders/:id" element={<OrderDetailPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
+        {/* Storefront (khách) */}
+        <Route element={<StorefrontLayout />}>
+          <Route path="/" element={<MenuPage />} />
+          <Route path="/design-system" element={<DesignSystemPage />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/cart" element={<CartPage />} />
+            <Route path="/orders" element={<OrdersPage />} />
+            <Route path="/orders/:id" element={<OrderDetailPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+          </Route>
         </Route>
-      </Route>
 
-      {/* Back-office (🔒 + 👮 staff/admin) */}
-      <Route element={<ProtectedRoute />}>
-        <Route element={<RoleRoute roles={["staff", "admin"]} />}>
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<DashboardPage />} />
-            <Route path="orders" element={<AdminOrdersPage />} />
-            <Route path="orders/:id" element={<AdminOrderDetailPage />} />
-            <Route path="categories" element={<AdminCategoriesPage />} />
-            <Route path="products" element={<AdminProductsPage />} />
-            <Route path="tables" element={<AdminTablesPage />} />
-            <Route element={<RoleRoute roles={["admin"]} />}>
-              <Route path="users" element={<AdminUsersPage />} />
+        {/* Back-office (🔒 + 👮 staff/admin) */}
+        <Route element={<ProtectedRoute />}>
+          <Route element={<RoleRoute roles={["staff", "admin"]} />}>
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<DashboardPage />} />
+              <Route path="orders" element={<AdminOrdersPage />} />
+              <Route path="orders/:id" element={<AdminOrderDetailPage />} />
+              <Route path="categories" element={<AdminCategoriesPage />} />
+              <Route path="products" element={<AdminProductsPage />} />
+              <Route path="tables" element={<AdminTablesPage />} />
+              <Route element={<RoleRoute roles={["admin"]} />}>
+                <Route path="users" element={<AdminUsersPage />} />
+              </Route>
             </Route>
           </Route>
         </Route>
-      </Route>
 
-      {/* Hệ thống */}
-      <Route path="/403" element={<ForbiddenPage />} />
-      <Route path="*" element={<NotFoundPage />} />
-    </Routes>
+        {/* Hệ thống */}
+        <Route path="/403" element={<ForbiddenPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </Suspense>
   );
 }
 
