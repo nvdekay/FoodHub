@@ -10,7 +10,7 @@ function ProductImage({ src, name }) {
         src={src}
         alt={name}
         loading="lazy"
-        className="h-28 w-full rounded-lg object-cover sm:h-32"
+        className="h-28 w-full object-cover transition-transform duration-300 group-hover:scale-110 sm:h-32"
         onError={(e) => {
           e.currentTarget.style.display = "none";
         }}
@@ -18,7 +18,7 @@ function ProductImage({ src, name }) {
     );
   }
   return (
-    <div className="flex h-28 w-full items-center justify-center rounded-lg bg-primary/10 text-3xl sm:h-32">
+    <div className="flex h-28 w-full items-center justify-center bg-primary/10 text-3xl transition-transform duration-300 group-hover:scale-110 sm:h-32">
       🍵
     </div>
   );
@@ -28,9 +28,9 @@ export default function ProductCard({ product, onSelect }) {
   const hasExtra = product.options?.some((g) => g.choices?.some((c) => c.priceModifier > 0));
 
   return (
-    <Card className="flex flex-col overflow-hidden p-3 transition hover:shadow-md">
-      <button onClick={() => onSelect(product)} className="text-left">
-        <div className="relative">
+    <Card className="group flex cursor-pointer flex-col overflow-hidden p-3 transition duration-200 hover:-translate-y-1 hover:scale-[1.02] hover:shadow-lg">
+      <button onClick={() => onSelect(product)} className="block w-full text-left">
+        <div className="relative overflow-hidden rounded-lg">
           <ProductImage src={product.imageUrl} name={product.name} />
           {product.isFeatured && (
             <Badge className="absolute left-2 top-2 bg-accent/90 text-white">

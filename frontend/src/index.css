@@ -24,6 +24,17 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
+  /* Con trỏ tay cho mọi nút/phần tử bấm được */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  label[for],
+  summary,
+  select:not(:disabled) {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
 }
 
 /* ===== Animations (chuyển trang trượt + hiệu ứng mượt) ===== */
