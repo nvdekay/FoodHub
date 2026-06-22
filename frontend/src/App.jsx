@@ -9,6 +9,7 @@ import CartPage from "./pages/CartPage";
 import OrdersPage from "./pages/OrdersPage";
 import OrderDetailPage from "./pages/OrderDetailPage";
 import ProfilePage from "./pages/ProfilePage";
+import DashboardPage from "./pages/DashboardPage";
 import DesignSystemPage from "./pages/DesignSystemPage";
 import PlaceholderPage from "./pages/PlaceholderPage";
 import NotFoundPage from "./pages/NotFoundPage";
@@ -42,7 +43,7 @@ function App() {
       <Route element={<ProtectedRoute />}>
         <Route element={<RoleRoute roles={["staff", "admin"]} />}>
           <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<PlaceholderPage title="Tổng quan (Dashboard)" />} />
+            <Route index element={<DashboardPage />} />
             <Route path="orders" element={<PlaceholderPage title="Quản lý đơn" />} />
             <Route path="products" element={<PlaceholderPage title="Quản lý thực đơn" />} />
             <Route path="tables" element={<PlaceholderPage title="Quản lý bàn" />} />
