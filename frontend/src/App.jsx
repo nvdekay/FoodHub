@@ -4,6 +4,7 @@ import AdminLayout from "./components/layout/AdminLayout";
 import { ProtectedRoute, RoleRoute } from "./components/common/ProtectedRoute";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import MenuPage from "./pages/MenuPage";
 import DesignSystemPage from "./pages/DesignSystemPage";
 import PlaceholderPage from "./pages/PlaceholderPage";
 import NotFoundPage from "./pages/NotFoundPage";
@@ -23,7 +24,8 @@ function App() {
 
       {/* Storefront (khách) */}
       <Route element={<StorefrontLayout />}>
-        <Route path="/" element={<DesignSystemPage />} />
+        <Route path="/" element={<MenuPage />} />
+        <Route path="/design-system" element={<DesignSystemPage />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/cart" element={<PlaceholderPage title="Giỏ hàng" />} />
           <Route path="/orders" element={<PlaceholderPage title="Đơn của tôi" />} />

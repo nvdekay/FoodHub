@@ -1,11 +1,14 @@
 import { Link, Outlet } from "react-router-dom";
+import { ShoppingCart } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import { useCart } from "../../context/CartContext";
 import { Button } from "../ui";
 import UserMenu from "./UserMenu";
 
 /** Layout cho khu vực khách hàng (storefront). */
 export default function StorefrontLayout() {
   const { isAuthenticated, isStaff } = useAuth();
+  const { totalCount } = useCart();
 
   return (
     <div className="min-h-screen bg-bg">
@@ -16,6 +19,18 @@ export default function StorefrontLayout() {
           </Link>
 
           <div className="flex items-center gap-2">
+            <Link
+              to="/cart"
+              className="relative rounded-lg p-2 text-gray-600 transition hover:bg-gray-100"
+              aria-label="Giỏ hàng"
+            >
+              <ShoppingCart className="h-5 w-5" />
+              {totalCount > 0 && (
+                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-white">
+                  {totalCount}
+                </span>
+              )}
+            </Link>
             {isStaff && (
               <Link to="/admin">
                 <Button variant="ghost" size="sm">
