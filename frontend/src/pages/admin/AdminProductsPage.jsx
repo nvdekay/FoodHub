@@ -96,8 +96,55 @@ export default function AdminProductsPage() {
       ) : products.length === 0 ? (
         <EmptyState icon={UtensilsCrossed} title="Không có món nào" description="Chưa có món khớp bộ lọc." />
       ) : (
-        <Card className="overflow-x-auto p-0">
-          <table className="w-full min-w-[720px] text-sm">
+        <>
+          {/* Mobile/tablet: danh sách thẻ */}
+          <div className="space-y-3 lg:hidden">
+            {products.map((p) => (
+              <Card key={p._id} className="flex items-center gap-3 p-3">
+                {p.imageUrl ? (
+                  <img src={p.imageUrl} alt={p.name} className="h-14 w-14 flex-shrink-0 rounded-lg object-cover" />
+                ) : (
+                  <span className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-300">
+                    <UtensilsCrossed className="h-5 w-5" />
+                  </span>
+                )}
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-medium text-gray-800">{p.name}</p>
+                  <p className="truncate text-xs text-gray-500">{p.categoryId?.name || "—"}</p>
+                  <div className="mt-1 flex flex-wrap items-center gap-2">
+                    <span className="font-medium text-primary">{formatVND(p.basePrice)}</span>
+                    {p.isAvailable ? (
+                      <Badge className="bg-green-100 text-green-700">Còn bán</Badge>
+                    ) : (
+                      <Badge className="bg-gray-100 text-gray-500">Đã ẩn</Badge>
+                    )}
+                    {p.isFeatured && <Badge className="bg-lime-100 text-lime-700">Nổi bật</Badge>}
+                  </div>
+                </div>
+                <div className="flex flex-shrink-0 flex-col gap-1">
+                  <button
+                    onClick={() => setEditing(p)}
+                    className="rounded-lg p-2 text-gray-500 transition hover:bg-gray-100 hover:text-primary"
+                    aria-label="Sửa"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => setToDelete(p)}
+                    disabled={!p.isAvailable}
+                    className="rounded-lg p-2 text-gray-500 transition hover:bg-red-50 hover:text-red-600 disabled:opacity-30 disabled:hover:bg-transparent"
+                    aria-label="Ẩn món"
+                  >
+                    <EyeOff className="h-4 w-4" />
+                  </button>
+                </div>
+              </Card>
+            ))}
+          </div>
+
+          {/* Laptop/PC: bảng */}
+          <Card className="hidden overflow-x-auto p-0 lg:block">
+            <table className="w-full min-w-[720px] text-sm">
             <thead>
               <tr className="border-b border-gray-100 text-left text-xs uppercase text-gray-400">
                 <th className="px-4 py-3 font-medium">Món</th>
@@ -157,7 +204,8 @@ export default function AdminProductsPage() {
               ))}
             </tbody>
           </table>
-        </Card>
+          </Card>
+        </>
       )}
 
       {pagination && (

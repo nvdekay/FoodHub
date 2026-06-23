@@ -83,8 +83,34 @@ export default function AdminOrdersPage() {
       ) : orders.length === 0 ? (
         <EmptyState title="Không có đơn nào" description="Chưa có đơn khớp bộ lọc hiện tại." />
       ) : (
-        <Card className="overflow-x-auto p-0">
-          <table className="w-full min-w-[760px] text-sm">
+        <>
+          {/* Mobile/tablet: danh sách thẻ */}
+          <div className="space-y-3 lg:hidden">
+            {orders.map((o) => (
+              <Card key={o._id} className="space-y-3 p-4">
+                <div className="flex items-center justify-between gap-2">
+                  <Link
+                    to={`/admin/orders/${o._id}`}
+                    className="font-semibold text-primary hover:underline"
+                  >
+                    {o.orderCode}
+                  </Link>
+                  <StatusPill status={o.status} type="order" />
+                </div>
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500">
+                  <span>{formatDate(o.createdAt)}</span>
+                  <span>Bàn {o.tableNumber}</span>
+                  <span className="font-medium text-gray-800">{formatVND(o.totalAmount)}</span>
+                  <StatusPill status={o.paymentStatus} type="payment" />
+                </div>
+                <OrderActions order={o} variant="row" />
+              </Card>
+            ))}
+          </div>
+
+          {/* Laptop/PC: bảng */}
+          <Card className="hidden overflow-x-auto p-0 lg:block">
+            <table className="w-full min-w-[760px] text-sm">
             <thead>
               <tr className="border-b border-gray-100 text-left text-xs uppercase text-gray-400">
                 <th className="px-4 py-3 font-medium">Mã đơn</th>
@@ -114,7 +140,8 @@ export default function AdminOrdersPage() {
               ))}
             </tbody>
           </table>
-        </Card>
+          </Card>
+        </>
       )}
 
       {pagination && (
