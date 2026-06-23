@@ -11,7 +11,7 @@ const ACCENTS = {
 /** Thẻ chỉ số KPI cho dashboard. */
 export default function KpiCard({ icon: Icon, label, value, sub, accent = "primary" }) {
   return (
-    <Card className="flex items-center gap-4 p-4 transition duration-200 hover:-translate-y-0.5 hover:shadow-md">
+    <Card className="card-hover flex items-center gap-4 p-4">
       {Icon && (
         <span className={cn("flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl", ACCENTS[accent])}>
           <Icon className="h-5 w-5" />

@@ -64,6 +64,18 @@
   }
 }
 
+/* Card nổi lên khi xuất hiện (dùng cho stagger lưới món) */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Trượt form auth (login <-> register) */
 @keyframes auth-slide-right {
   from {
@@ -96,6 +108,13 @@
   }
   .animate-bar-grow {
     animation: bar-grow 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .animate-fade-up {
+    animation: fade-up 0.35s ease-out both;
+  }
+  /* Hover thẻ thống nhất: nhấc nhẹ + đổ bóng */
+  .card-hover {
+    @apply transition duration-200 hover:-translate-y-0.5 hover:shadow-lg;
   }
   .animate-auth-right {
     animation: auth-slide-right 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
