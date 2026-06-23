@@ -8,12 +8,13 @@ import ProductCard from "../features/menu/ProductCard";
 import ProductDetailModal from "../features/menu/ProductDetailModal";
 import MenuHero from "../features/menu/MenuHero";
 import CategorySection from "../features/menu/CategorySection";
+import ProductGrid from "../features/menu/ProductGrid";
 
 const catOf = (p) => p.categoryId?._id || p.categoryId;
 
 function GridSkeleton() {
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+    <ProductGrid>
       {Array.from({ length: 12 }).map((_, i) => (
         <Card key={i} className="p-3">
           <Skeleton className="h-28 w-full sm:h-32" />
@@ -21,7 +22,7 @@ function GridSkeleton() {
           <Skeleton className="mt-2 h-4 w-1/2" />
         </Card>
       ))}
-    </div>
+    </ProductGrid>
   );
 }
 
@@ -74,11 +75,11 @@ export default function MenuPage() {
             <h2 className="mb-4 text-lg font-bold text-gray-800">
               Kết quả cho “{debounced}” ({searchResults.length})
             </h2>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+            <ProductGrid>
               {searchResults.map((p) => (
                 <ProductCard key={p._id} product={p} onSelect={setSelected} />
               ))}
-            </div>
+            </ProductGrid>
           </section>
         ) : (
           <EmptyState
