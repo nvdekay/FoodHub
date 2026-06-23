@@ -18,7 +18,7 @@ export default function StorefrontLayout() {
   return (
     <div className="min-h-screen bg-bg">
       <header className="sticky top-0 z-30 border-b border-gray-100 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex max-w-[1800px] items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-[1536px] items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-2 text-lg font-bold text-primary">
             <span className="text-2xl">🍵</span> FoodHub
           </Link>
@@ -61,7 +61,7 @@ export default function StorefrontLayout() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-[1800px] px-4 py-6 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-[1536px] px-4 py-6 sm:px-6 lg:px-8">
         <Suspense fallback={<PageLoader />}>
           <PageTransition>
             <Outlet />
