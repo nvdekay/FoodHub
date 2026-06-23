@@ -4,7 +4,6 @@
 @theme {
   --color-primary: #15803d;        /* xanh lá — nút chính, nhấn */
   --color-primary-dark: #166534;   /* hover */
-  --color-primary-light: #22c55e;  /* nhấn nhạt */
   --color-accent: #65a30d;         /* lime — tag, điểm nhấn phụ */
   --color-bg: #f0fdf4;             /* nền trang (xanh nhạt) */
   --color-surface: #ffffff;        /* nền card */
@@ -55,16 +54,6 @@
   }
   to {
     opacity: 1;
-  }
-}
-
-@keyframes skeleton-pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.45;
   }
 }
 
