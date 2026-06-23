@@ -87,7 +87,7 @@ export default function AdminTablesPage() {
             <Card
               key={t._id}
               className={cn(
-                "p-4 transition duration-200 hover:-translate-y-1 hover:scale-[1.02] hover:shadow-lg",
+                "p-4 transition duration-200 hover:-translate-y-0.5 hover:shadow-lg",
                 !t.isActive && "opacity-60"
               )}
             >

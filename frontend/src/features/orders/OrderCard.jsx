@@ -9,7 +9,7 @@ export default function OrderCard({ order }) {
 
   return (
     <Link to={`/orders/${order._id}`} className="block">
-      <Card className="cursor-pointer p-4 transition duration-200 hover:-translate-y-1 hover:scale-[1.02] hover:border-primary/40 hover:shadow-lg">
+      <Card className="cursor-pointer p-4 transition duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p className="font-semibold text-gray-800">{order.orderCode}</p>
