@@ -45,8 +45,48 @@ export default function AdminCategoriesPage() {
       ) : categories.length === 0 ? (
         <EmptyState title="Chưa có danh mục" description="Tạo danh mục đầu tiên để phân loại món." />
       ) : (
-        <Card className="overflow-x-auto p-0">
-          <table className="w-full min-w-[640px] text-sm">
+        <>
+          {/* Mobile/tablet: danh sách thẻ */}
+          <div className="space-y-3 lg:hidden">
+            {categories.map((c) => (
+              <Card key={c._id} className="space-y-2 p-4">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="truncate font-medium text-gray-800">{c.name}</p>
+                    <p className="truncate text-sm text-gray-500">{c.description || "—"}</p>
+                  </div>
+                  {c.isActive ? (
+                    <Badge className="bg-green-100 text-green-700">Hiển thị</Badge>
+                  ) : (
+                    <Badge className="bg-gray-100 text-gray-500">Đã ẩn</Badge>
+                  )}
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-400">Thứ tự: {c.displayOrder}</span>
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => setEditing(c)}
+                      className="rounded-lg p-2 text-gray-500 transition hover:bg-gray-100 hover:text-primary"
+                      aria-label="Sửa"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => setToDelete(c)}
+                      className="rounded-lg p-2 text-gray-500 transition hover:bg-red-50 hover:text-red-600"
+                      aria-label="Xoá"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+
+          {/* Laptop/PC: bảng */}
+          <Card className="hidden overflow-x-auto p-0 lg:block">
+            <table className="w-full min-w-[640px] text-sm">
             <thead>
               <tr className="border-b border-gray-100 text-left text-xs uppercase text-gray-400">
                 <th className="px-4 py-3 font-medium">Tên</th>
@@ -91,7 +131,8 @@ export default function AdminCategoriesPage() {
               ))}
             </tbody>
           </table>
-        </Card>
+          </Card>
+        </>
       )}
 
       {editing !== undefined && (

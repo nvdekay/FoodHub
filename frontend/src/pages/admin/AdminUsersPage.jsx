@@ -90,8 +90,64 @@ export default function AdminUsersPage() {
       ) : users.length === 0 ? (
         <EmptyState title="Không có người dùng" description="Chưa có tài khoản khớp bộ lọc." />
       ) : (
-        <Card className="overflow-x-auto p-0">
-          <table className="w-full min-w-[760px] text-sm">
+        <>
+          {/* Mobile/tablet: danh sách thẻ */}
+          <div className="space-y-3 lg:hidden">
+            {users.map((u) => {
+              const isSelf = u._id === me?._id;
+              return (
+                <Card key={u._id} className="space-y-3 p-4">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="truncate font-medium text-gray-800">
+                        {u.fullName}
+                        {isSelf && <span className="ml-1 text-xs text-gray-400">(bạn)</span>}
+                      </p>
+                      <p className="truncate text-sm text-gray-500">{u.email}</p>
+                      <p className="text-sm text-gray-500">{u.phone}</p>
+                    </div>
+                    {u.isActive ? (
+                      <Badge className="bg-green-100 text-green-700">Hoạt động</Badge>
+                    ) : (
+                      <Badge className="bg-red-100 text-red-700">Đã khoá</Badge>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    {isSelf ? (
+                      <Badge className={ROLE_BADGE[u.role]}>{ROLE_LABEL[u.role]}</Badge>
+                    ) : (
+                      <select
+                        value={u.role}
+                        onChange={(e) => changeRole(u, e.target.value)}
+                        disabled={updateStatus.isPending}
+                        className="rounded-lg border border-gray-300 bg-white px-2 py-1 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
+                      >
+                        {ROLES.map((r) => (
+                          <option key={r} value={r}>{ROLE_LABEL[r]}</option>
+                        ))}
+                      </select>
+                    )}
+                    <Button
+                      size="sm"
+                      variant={u.isActive ? "danger" : "secondary"}
+                      disabled={isSelf || updateStatus.isPending}
+                      onClick={() => toggleLock(u)}
+                    >
+                      {u.isActive ? (
+                        <><Lock className="h-3.5 w-3.5" /> Khoá</>
+                      ) : (
+                        <><Unlock className="h-3.5 w-3.5" /> Mở khoá</>
+                      )}
+                    </Button>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+
+          {/* Laptop/PC: bảng */}
+          <Card className="hidden overflow-x-auto p-0 lg:block">
+            <table className="w-full min-w-[760px] text-sm">
             <thead>
               <tr className="border-b border-gray-100 text-left text-xs uppercase text-gray-400">
                 <th className="px-4 py-3 font-medium">Họ tên</th>
@@ -157,7 +213,8 @@ export default function AdminUsersPage() {
               })}
             </tbody>
           </table>
-        </Card>
+          </Card>
+        </>
       )}
 
       {pagination && (
