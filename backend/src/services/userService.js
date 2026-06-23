@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import ApiError from "../utils/ApiError.js";
+import { escapeRegex } from "../utils/escapeRegex.js";
 
 const saltRounds = () => parseInt(process.env.BCRYPT_SALT_ROUNDS || "10", 10);
 
@@ -48,10 +49,11 @@ export const listUsers = async ({ page, limit, role, search }) => {
   const filter = {};
   if (role) filter.role = role;
   if (search) {
+    const safe = escapeRegex(search);
     filter.$or = [
-      { fullName: { $regex: search, $options: "i" } },
-      { email: { $regex: search, $options: "i" } },
-      { phone: { $regex: search, $options: "i" } },
+      { fullName: { $regex: safe, $options: "i" } },
+      { email: { $regex: safe, $options: "i" } },
+      { phone: { $regex: safe, $options: "i" } },
     ];
   }
 

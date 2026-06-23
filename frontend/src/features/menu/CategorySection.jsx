@@ -1,5 +1,6 @@
 import { categoryImage } from "../../lib/categoryImages";
 import ProductCard from "./ProductCard";
+import ProductGrid from "./ProductGrid";
 
 /** Một section danh mục: header (ảnh + tên + số món) + lưới món. */
 export default function CategorySection({ category, items, onSelect }) {
@@ -23,11 +24,11 @@ export default function CategorySection({ category, items, onSelect }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+      <ProductGrid>
         {items.map((p) => (
           <ProductCard key={p._id} product={p} onSelect={onSelect} />
         ))}
-      </div>
+      </ProductGrid>
     </section>
   );
 }

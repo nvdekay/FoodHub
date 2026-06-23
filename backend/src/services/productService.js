@@ -2,6 +2,7 @@ import Product from "../models/Product.js";
 import Category from "../models/Category.js";
 import ApiError from "../utils/ApiError.js";
 import { generateUniqueSlug } from "../utils/slugify.js";
+import { escapeRegex } from "../utils/escapeRegex.js";
 
 const SORT_MAP = {
   newest: { createdAt: -1 },
@@ -48,7 +49,7 @@ export const listProducts = async ({
 }) => {
   const filter = {};
   if (categoryId) filter.categoryId = categoryId;
-  if (search) filter.name = { $regex: search, $options: "i" };
+  if (search) filter.name = { $regex: escapeRegex(search), $options: "i" };
   if (isAvailable !== undefined) filter.isAvailable = isAvailable;
   if (isFeatured !== undefined) filter.isFeatured = isFeatured;
 
