@@ -57,6 +57,13 @@
   }
 }
 
+/* Thanh biểu đồ "mọc" từ 0 -> chiều rộng inline-style khi mount */
+@keyframes bar-grow {
+  from {
+    width: 0;
+  }
+}
+
 /* Trượt form auth (login <-> register) */
 @keyframes auth-slide-right {
   from {
@@ -86,6 +93,9 @@
   }
   .animate-fade-in {
     animation: fade-in 0.25s ease-out both;
+  }
+  .animate-bar-grow {
+    animation: bar-grow 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
   .animate-auth-right {
     animation: auth-slide-right 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
