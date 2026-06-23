@@ -28,7 +28,7 @@ export default function OrdersByStatusChart({ data }) {
             </span>
             <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-gray-100">
               <div
-                className={cn("h-full rounded-full transition-all", BAR_COLOR[status])}
+                className={cn("animate-bar-grow h-full rounded-full transition-all", BAR_COLOR[status])}
                 style={{ width: `${(count / max) * 100}%` }}
               />
             </div>

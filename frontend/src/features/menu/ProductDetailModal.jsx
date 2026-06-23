@@ -134,7 +134,8 @@ export default function ProductDetailModal({ product, open, onClose }) {
           onChange={(e) => setNote(e.target.value)}
         />
 
-        <div className="flex items-center justify-between border-t border-gray-100 pt-4">
+        {/* Hàng hành động dính đáy modal — không bị trôi khi món nhiều tuỳ chọn */}
+        <div className="sticky bottom-0 -mx-5 -mb-5 flex items-center justify-between gap-3 border-t border-gray-100 bg-white px-5 py-4">
           <QuantityStepper value={quantity} onChange={setQuantity} />
           <Button onClick={onAdd}>Thêm vào giỏ · {formatVND(total)}</Button>
         </div>
