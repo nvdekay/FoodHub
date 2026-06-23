@@ -29,7 +29,7 @@ export default function ProductCard({ product, onSelect }) {
   const hasExtra = product.options?.some((g) => g.choices?.some((c) => c.priceModifier > 0));
 
   return (
-    <Card className="group cursor-pointer overflow-hidden p-0 transition duration-200 hover:-translate-y-0.5 hover:shadow-lg">
+    <Card className="card-hover group h-full cursor-pointer overflow-hidden p-0">
       {/* Toàn bộ thẻ là một vùng bấm duy nhất (bỏ vùng chết, tránh nút lồng nút) */}
       <button onClick={() => onSelect(product)} className="flex h-full w-full flex-col p-3 text-left">
         <div className="relative overflow-hidden rounded-lg">
