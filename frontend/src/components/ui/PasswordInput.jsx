@@ -1,22 +1,27 @@
-import { forwardRef, useState } from "react";
+import { forwardRef, useId, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { cn } from "../../lib/cn";
 
 /** Ô nhập mật khẩu có nút ẩn/hiện. Tương thích react-hook-form (forwardRef). */
 const PasswordInput = forwardRef(({ label, error, className, id, ...props }, ref) => {
   const [show, setShow] = useState(false);
+  const autoId = useId();
+  const inputId = id ?? autoId;
+  const errorId = error ? `${inputId}-error` : undefined;
   return (
     <div className="w-full">
       {label && (
-        <label htmlFor={id} className="mb-1 block text-sm font-medium text-gray-700">
+        <label htmlFor={inputId} className="mb-1 block text-sm font-medium text-gray-700">
           {label}
         </label>
       )}
       <div className="relative">
         <input
           ref={ref}
-          id={id}
+          id={inputId}
           type={show ? "text" : "password"}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={errorId}
           className={cn(
             "w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 text-sm outline-none transition",
             "focus:border-primary focus:ring-2 focus:ring-primary/30",
@@ -35,7 +40,11 @@ const PasswordInput = forwardRef(({ label, error, className, id, ...props }, ref
           {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
         </button>
       </div>
-      {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
+      {error && (
+        <p id={errorId} className="mt-1 text-xs text-red-600">
+          {error}
+        </p>
+      )}
     </div>
   );
 });
