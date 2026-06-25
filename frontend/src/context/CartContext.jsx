@@ -10,12 +10,19 @@ export const useCart = () => {
   return ctx;
 };
 
-// Chữ ký tuỳ chọn để gộp các dòng cùng cấu hình
+// Chữ ký tuỳ chọn để gộp các dòng cùng cấu hình.
+// Dùng JSON (không nối chuỗi thủ công) để nhãn chứa ký tự ":" / "|" không gây đụng độ,
+// và đưa cả priceModifier vào khoá để hai lựa chọn cùng nhãn nhưng khác phụ phí không bị gộp.
 const optionSignature = (selectedOptions = []) =>
-  selectedOptions
-    .map((o) => `${o.groupName}:${o.choiceLabel}`)
-    .sort()
-    .join("|");
+  JSON.stringify(
+    selectedOptions
+      .map((o) => [o.groupName, o.choiceLabel, o.priceModifier || 0])
+      .sort((a, b) => {
+        if (a[0] !== b[0]) return a[0] < b[0] ? -1 : 1;
+        if (a[1] !== b[1]) return a[1] < b[1] ? -1 : 1;
+        return a[2] - b[2];
+      })
+  );
 
 const computeUnit = (basePrice, selectedOptions = []) =>
   basePrice + selectedOptions.reduce((s, o) => s + (o.priceModifier || 0), 0);
