@@ -35,13 +35,21 @@ export default function CategoryChips({ categories = [], value, onChange }) {
         aria-hidden="true"
         className="absolute left-0 top-0 rounded-full bg-primary opacity-0 transition-all duration-300 ease-out"
       />
-      <button data-active={!value} className={chip(!value)} onClick={() => onChange(null)}>
+      <button
+        type="button"
+        data-active={!value}
+        aria-pressed={!value}
+        className={chip(!value)}
+        onClick={() => onChange(null)}
+      >
         Tất cả
       </button>
       {categories.map((c) => (
         <button
           key={c._id}
+          type="button"
           data-active={value === c._id}
+          aria-pressed={value === c._id}
           className={chip(value === c._id)}
           onClick={() => onChange(c._id)}
         >
