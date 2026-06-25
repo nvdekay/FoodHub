@@ -38,6 +38,13 @@ export default function OrderActions({ order, variant = "full" }) {
   const s = order.status;
   const isFull = variant === "full";
 
+  // Giảm giá hợp lệ phải nằm trong [0, subtotal] và là số hữu hạn.
+  const rawDiscount = discount.trim();
+  const parsedDiscount = Number(rawDiscount);
+  const clampedDiscount = Number.isFinite(parsedDiscount)
+    ? Math.min(order.subtotal, Math.max(0, parsedDiscount))
+    : 0;
+
   const run = (mutation, vars, okMsg, after) =>
     mutation.mutate(vars, {
       onSuccess: () => {
@@ -119,7 +126,7 @@ export default function OrderActions({ order, variant = "full" }) {
           <div className="flex justify-between text-sm font-semibold">
             <span>Khách phải trả</span>
             <span className="text-primary">
-              {formatVND(Math.max(0, order.subtotal - (Number(discount) || 0)))}
+              {formatVND(order.subtotal - clampedDiscount)}
             </span>
           </div>
           <div className="flex justify-end gap-2">
@@ -129,10 +136,16 @@ export default function OrderActions({ order, variant = "full" }) {
             <Button
               loading={confirm.isPending}
               onClick={() =>
-                run(confirm, { id: order._id, discountAmount: discount }, "Đã xác nhận đơn", () => {
-                  setDiscountOpen(false);
-                  setDiscount("");
-                })
+                run(
+                  confirm,
+                  // Để trống = không giảm giá (gửi ""); ngược lại gửi giá trị đã clamp.
+                  { id: order._id, discountAmount: rawDiscount === "" ? "" : clampedDiscount },
+                  "Đã xác nhận đơn",
+                  () => {
+                    setDiscountOpen(false);
+                    setDiscount("");
+                  }
+                )
               }
             >
               Xác nhận
