@@ -24,7 +24,7 @@ export default function CategoryFormModal({ category, open, onClose }) {
     }
     const payload = {
       name: name.trim(),
-      description: description.trim() || undefined,
+      description: description.trim() || null, // null (không undefined) để xoá được mô tả khi sửa
       imageUrl: imageUrl.trim() || null,
       displayOrder: Number(displayOrder) || 0,
       isActive,
