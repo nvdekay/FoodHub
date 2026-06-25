@@ -35,9 +35,21 @@ const registerSchema = z
 export default function AuthPage() {
   const { login, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
-  const { pathname } = useLocation();
+  const location = useLocation();
+  const { pathname } = location;
   const isRegister = pathname.startsWith("/register");
   const mode = isRegister ? "register" : "login";
+
+  // Điều hướng sau khi xác thực: ưu tiên trang user bị chặn trước đó (ProtectedRoute
+  // lưu ở state.from), trừ khi đó là khu admin mà khách không có quyền vào.
+  const redirectAfterAuth = (role) => {
+    const from = location.state?.from?.pathname;
+    const target =
+      from && !(role === "customer" && from.startsWith("/admin"))
+        ? from
+        : homePathForRole(role);
+    navigate(target, { replace: true });
+  };
 
   const loginForm = useForm({ resolver: zodResolver(loginSchema) });
   const registerForm = useForm({ resolver: zodResolver(registerSchema) });
@@ -47,7 +59,7 @@ export default function AuthPage() {
     onSuccess: (data) => {
       login(data);
       toast.success("Đăng nhập thành công");
-      navigate(homePathForRole(data.user.role), { replace: true });
+      redirectAfterAuth(data.user.role);
     },
     onError: (e) => toast.error(e.message || "Đăng nhập thất bại"),
   });
@@ -58,7 +70,7 @@ export default function AuthPage() {
     onSuccess: (data) => {
       login(data);
       toast.success("Đăng ký thành công");
-      navigate(homePathForRole(data.user.role), { replace: true });
+      redirectAfterAuth(data.user.role);
     },
     onError: (e) => toast.error(e.message || "Đăng ký thất bại"),
   });
