@@ -25,9 +25,9 @@ axiosClient.interceptors.response.use(
     if (status === 401) {
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem(USER_KEY);
-      if (!window.location.pathname.startsWith("/login")) {
-        window.location.href = "/login";
-      }
+      // Đăng xuất mềm: AuthProvider lắng nghe và clear state, ProtectedRoute tự đẩy về
+      // /login. Tránh window.location.href (reload toàn trang, mất state/form đang nhập).
+      window.dispatchEvent(new CustomEvent("foodhub:unauthorized"));
     }
 
     return Promise.reject({

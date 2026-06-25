@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const TOKEN_KEY = "foodhub_token";
 const USER_KEY = "foodhub_user";
@@ -39,6 +39,15 @@ export function AuthProvider({ children }) {
     localStorage.removeItem(USER_KEY);
     localStorage.removeItem(TOKEN_KEY);
   };
+
+  // Phiên hết hạn (axiosClient bắt 401) phát "foodhub:unauthorized" → đăng xuất mềm.
+  // Clear state ngay trong tab hiện tại; ProtectedRoute sẽ tự điều hướng về /login,
+  // không cần reload toàn trang nên không mất state/form đang nhập ở trang công khai.
+  useEffect(() => {
+    const onUnauthorized = () => logout();
+    window.addEventListener("foodhub:unauthorized", onUnauthorized);
+    return () => window.removeEventListener("foodhub:unauthorized", onUnauthorized);
+  }, []);
 
   const updateUser = (u) => {
     setUser(u);
