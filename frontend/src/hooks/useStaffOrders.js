@@ -29,16 +29,18 @@ const useOrderMutation = (mutationFn) => {
   });
 };
 
-/** Xác nhận đơn — discountAmount tuỳ chọn. */
+/** Xác nhận đơn — discountAmount tuỳ chọn (không âm; "" = không giảm). */
 export const useConfirmOrder = () =>
-  useOrderMutation(({ id, discountAmount }) =>
-    orderApi.confirmOrder(
-      id,
-      discountAmount !== undefined && discountAmount !== "" && discountAmount !== null
-        ? { discountAmount: Number(discountAmount) }
-        : {}
-    )
-  );
+  useOrderMutation(({ id, discountAmount }) => {
+    const hasDiscount =
+      discountAmount !== undefined && discountAmount !== "" && discountAmount !== null;
+    if (!hasDiscount) return orderApi.confirmOrder(id, {});
+    // Chốt chặn cuối: giảm giá luôn là số hữu hạn, không âm.
+    const n = Number(discountAmount);
+    return orderApi.confirmOrder(id, {
+      discountAmount: Number.isFinite(n) ? Math.max(0, n) : 0,
+    });
+  });
 
 /** Chuyển trạng thái chế biến (preparing/ready/completed). */
 export const useSetOrderStatus = () =>
