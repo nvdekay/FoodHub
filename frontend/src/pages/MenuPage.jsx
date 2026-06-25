@@ -33,7 +33,14 @@ export default function MenuPage() {
   const debounced = useDebounce(search, 350);
 
   const { data: categories = [] } = useCategories();
-  const { data: res, isLoading, isError } = useProducts({ limit: 100, isAvailable: true });
+  // Đẩy tìm kiếm + lọc danh mục xuống server (BE hỗ trợ regex theo tên) thay vì chỉ lọc
+  // client trên 100 món đầu — nếu không, món thứ 101 trở đi sẽ không bao giờ tìm thấy.
+  const { data: res, isLoading, isError } = useProducts({
+    limit: 100,
+    isAvailable: true,
+    search: debounced.trim() || undefined,
+    categoryId: activeCat || undefined,
+  });
   const all = res?.data || [];
 
   const q = debounced.trim().toLowerCase();
