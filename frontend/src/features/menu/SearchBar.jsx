@@ -12,6 +12,7 @@ export default function SearchBar({ value, onChange, placeholder = "Tìm món...
       />
       {value && (
         <button
+          type="button"
           onClick={() => onChange("")}
           className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-gray-400 hover:bg-gray-100"
           aria-label="Xoá tìm kiếm"

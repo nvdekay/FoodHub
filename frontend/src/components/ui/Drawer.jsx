@@ -25,6 +25,7 @@ export default function Drawer({ open, onClose, title, children, footer, classNa
           <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
             <DialogTitle className="text-lg font-semibold">{title}</DialogTitle>
             <button
+              type="button"
               onClick={onClose}
               className="rounded-lg p-1 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700"
               aria-label="Đóng"
