@@ -61,7 +61,7 @@ export default function ProductFormModal({ product, categories = [], open, onClo
       name: name.trim(),
       categoryId,
       basePrice: Number(basePrice),
-      description: description.trim() || undefined,
+      description: description.trim() || null, // null (không undefined) để xoá được mô tả khi sửa
       imageUrl: imageUrl.trim() || null,
       isAvailable,
       isFeatured,

@@ -24,7 +24,7 @@ export default function TableFormModal({ table, open, onClose }) {
     }
     const payload = {
       tableNumber: tableNumber.trim(),
-      capacity: capacity ? Number(capacity) : undefined,
+      capacity: capacity ? Number(capacity) : null, // null để xoá được sức chứa khi sửa
       status,
       qrCodeUrl: qrCodeUrl.trim() || null,
       isActive,
