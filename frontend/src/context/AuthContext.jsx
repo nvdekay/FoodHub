@@ -49,6 +49,31 @@ export function AuthProvider({ children }) {
     return () => window.removeEventListener("foodhub:unauthorized", onUnauthorized);
   }, []);
 
+  // Đồng bộ đăng nhập/đăng xuất giữa các tab: sự kiện "storage" chỉ bắn ở tab khác khi
+  // localStorage đổi. Lấy lại token/user từ localStorage (nguồn sự thật chung) để tab này
+  // không còn "kẹt" trạng thái cũ sau khi tab kia logout/login.
+  useEffect(() => {
+    const onStorage = (e) => {
+      // Bỏ qua thay đổi không liên quan tới khoá auth (e.key null khi clear() thì vẫn xử lý).
+      if (e.key && e.key !== TOKEN_KEY && e.key !== USER_KEY) return;
+      const t = localStorage.getItem(TOKEN_KEY);
+      if (!t) {
+        setUser(null);
+        setToken(null);
+        return;
+      }
+      setToken(t);
+      try {
+        const raw = localStorage.getItem(USER_KEY);
+        setUser(raw ? JSON.parse(raw) : null);
+      } catch {
+        setUser(null);
+      }
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
+
   const updateUser = (u) => {
     setUser(u);
     localStorage.setItem(USER_KEY, JSON.stringify(u));
