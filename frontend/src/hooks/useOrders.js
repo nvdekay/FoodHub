@@ -6,6 +6,9 @@ import {
 } from "@tanstack/react-query";
 import * as orderApi from "../api/orderApi";
 
+// Trạng thái kết thúc — không cần poll nữa.
+const TERMINAL_STATUSES = ["completed", "cancelled"];
+
 /**
  * Làm mới mọi cache liên quan tới đơn. Khách & nhân viên xem chung dữ liệu đơn,
  * nên 1 thao tác của khách phải đồng bộ cả danh sách phía NV (staff-orders) lẫn
@@ -26,12 +29,22 @@ export const useMyOrders = (params) =>
     placeholderData: keepPreviousData,
   });
 
-/** Chi tiết / theo dõi 1 đơn. */
+/**
+ * Chi tiết / theo dõi 1 đơn. Tự refetch mỗi 15s khi đơn còn đang xử lý để
+ * timeline trạng thái cập nhật trực tiếp; dừng poll khi đơn đã hoàn tất/huỷ
+ * và khi tab không hiển thị.
+ */
 export const useOrder = (id) =>
   useQuery({
     queryKey: ["order", id],
     queryFn: () => orderApi.getOrder(id),
     enabled: !!id,
+    refetchInterval: (query) => {
+      const status = query.state.data?.status;
+      if (status && TERMINAL_STATUSES.includes(status)) return false;
+      return 15000;
+    },
+    refetchIntervalInBackground: false,
   });
 
 /** Tạo đơn (F3). Sau khi đặt: làm mới danh sách đơn & trạng thái bàn. */
