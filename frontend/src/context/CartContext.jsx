@@ -27,6 +27,16 @@ const optionSignature = (selectedOptions = []) =>
 const computeUnit = (basePrice, selectedOptions = []) =>
   basePrice + selectedOptions.reduce((s, o) => s + (o.priceModifier || 0), 0);
 
+// Số lượng tối đa mỗi dòng (đồng bộ với max của QuantityStepper).
+const MAX_ITEM_QTY = 99;
+
+// Ép số lượng về số nguyên hợp lệ trong [0, MAX_ITEM_QTY]; giá trị rác/NaN → 0.
+const sanitizeQty = (q) => {
+  const n = Math.floor(Number(q));
+  if (!Number.isFinite(n) || n <= 0) return 0;
+  return Math.min(MAX_ITEM_QTY, n);
+};
+
 export function CartProvider({ children }) {
   const [items, setItems] = useState(() => {
     try {
@@ -41,29 +51,34 @@ export function CartProvider({ children }) {
   }, [items]);
 
   const addItem = ({ productId, name, basePrice, imageUrl, quantity, selectedOptions, note }) => {
+    const addQty = sanitizeQty(quantity);
+    if (addQty === 0) return; // không thêm số lượng không hợp lệ
     const key = `${productId}__${optionSignature(selectedOptions)}`;
     const unitPrice = computeUnit(basePrice, selectedOptions);
     setItems((prev) => {
       const idx = prev.findIndex((i) => i.key === key);
       if (idx >= 0) {
         const next = [...prev];
-        const q = next[idx].quantity + quantity;
+        // Cộng dồn nhưng không vượt quá giới hạn mỗi dòng.
+        const q = Math.min(MAX_ITEM_QTY, next[idx].quantity + addQty);
         next[idx] = { ...next[idx], quantity: q, itemTotal: unitPrice * q };
         return next;
       }
       return [
         ...prev,
-        { key, productId, name, basePrice, imageUrl, quantity, selectedOptions, note, unitPrice, itemTotal: unitPrice * quantity },
+        { key, productId, name, basePrice, imageUrl, quantity: addQty, selectedOptions, note, unitPrice, itemTotal: unitPrice * addQty },
       ];
     });
   };
 
-  const updateQuantity = (key, quantity) =>
+  const updateQuantity = (key, quantity) => {
+    const q = sanitizeQty(quantity);
     setItems((prev) =>
-      quantity <= 0
+      q === 0
         ? prev.filter((i) => i.key !== key)
-        : prev.map((i) => (i.key === key ? { ...i, quantity, itemTotal: i.unitPrice * quantity } : i))
+        : prev.map((i) => (i.key === key ? { ...i, quantity: q, itemTotal: i.unitPrice * q } : i))
     );
+  };
 
   const removeItem = (key) => setItems((prev) => prev.filter((i) => i.key !== key));
   const clear = () => setItems([]);
