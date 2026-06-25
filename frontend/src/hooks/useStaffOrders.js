@@ -21,6 +21,7 @@ const useOrderMutation = (mutationFn) => {
     mutationFn,
     onSuccess: (data) => {
       qc.invalidateQueries({ queryKey: ["staff-orders"] });
+      qc.invalidateQueries({ queryKey: ["my-orders"] }); // khách đang xem đơn của mình cũng phải cập nhật
       qc.invalidateQueries({ queryKey: ["dashboard"] });
       qc.invalidateQueries({ queryKey: ["tables"] }); // trạng thái bàn đổi khi hoàn tất/huỷ
       if (data?._id) qc.setQueryData(["order", data._id], data);
