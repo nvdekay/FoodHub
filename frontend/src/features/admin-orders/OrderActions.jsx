@@ -33,6 +33,7 @@ export default function OrderActions({ order, variant = "full" }) {
   const [payOpen, setPayOpen] = useState(false);
   const [discount, setDiscount] = useState("");
   const [reason, setReason] = useState("");
+  const [cancelTouched, setCancelTouched] = useState(false);
   const [method, setMethod] = useState(PAYMENT_METHOD[0]);
 
   const s = order.status;
@@ -158,10 +159,11 @@ export default function OrderActions({ order, variant = "full" }) {
       <Modal open={cancelOpen} onClose={() => setCancelOpen(false)} title="Huỷ đơn">
         <div className="space-y-4">
           <Textarea
-            label="Lý do huỷ"
+            label="Lý do huỷ *"
             placeholder="Ví dụ: khách đổi ý, hết nguyên liệu..."
             value={reason}
             onChange={(e) => setReason(e.target.value)}
+            error={cancelTouched && !reason.trim() ? "Vui lòng nhập lý do huỷ" : undefined}
           />
           <div className="flex justify-end gap-2">
             <Button variant="secondary" onClick={() => setCancelOpen(false)} disabled={cancel.isPending}>
@@ -170,12 +172,18 @@ export default function OrderActions({ order, variant = "full" }) {
             <Button
               variant="danger"
               loading={cancel.isPending}
-              onClick={() =>
-                run(cancel, { id: order._id, cancelReason: reason.trim() || undefined }, "Đã huỷ đơn", () => {
+              onClick={() => {
+                // Bắt buộc lý do: BE yêu cầu cancelReason, chặn ngay ở client cho UX rõ ràng.
+                if (!reason.trim()) {
+                  setCancelTouched(true);
+                  return;
+                }
+                run(cancel, { id: order._id, cancelReason: reason.trim() }, "Đã huỷ đơn", () => {
                   setCancelOpen(false);
                   setReason("");
-                })
-              }
+                  setCancelTouched(false);
+                });
+              }}
             >
               Xác nhận huỷ
             </Button>
