@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 const CART_KEY = "foodhub_cart";
 const CartContext = createContext(null);
@@ -61,9 +61,28 @@ export function CartProvider({ children }) {
   const removeItem = (key) => setItems((prev) => prev.filter((i) => i.key !== key));
   const clear = () => setItems([]);
 
+  /**
+   * Đồng bộ giá giỏ với thực đơn mới nhất (basePrice có thể đã đổi sau khi thêm vào giỏ).
+   * `productMap`: Map<productId, product>. Chỉ ghi lại state khi thực sự có thay đổi.
+   */
+  const reconcilePrices = useCallback((productMap) => {
+    setItems((prev) => {
+      let changed = false;
+      const next = prev.map((i) => {
+        const p = productMap.get(i.productId);
+        if (!p || typeof p.basePrice !== "number") return i;
+        const unitPrice = computeUnit(p.basePrice, i.selectedOptions);
+        if (p.basePrice === i.basePrice && unitPrice === i.unitPrice) return i;
+        changed = true;
+        return { ...i, basePrice: p.basePrice, unitPrice, itemTotal: unitPrice * i.quantity };
+      });
+      return changed ? next : prev;
+    });
+  }, []);
+
   const totalCount = useMemo(() => items.reduce((s, i) => s + i.quantity, 0), [items]);
   const subtotal = useMemo(() => items.reduce((s, i) => s + i.itemTotal, 0), [items]);
 
-  const value = { items, addItem, updateQuantity, removeItem, clear, totalCount, subtotal };
+  const value = { items, addItem, updateQuantity, removeItem, clear, reconcilePrices, totalCount, subtotal };
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

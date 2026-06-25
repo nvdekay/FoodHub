@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ShoppingCart, ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
@@ -6,14 +6,32 @@ import { Button, Select, Textarea, EmptyState, Card, Spinner } from "../componen
 import { useCart } from "../context/CartContext";
 import { useTables } from "../hooks/useTables";
 import { useCreateOrder } from "../hooks/useOrders";
+import { useProducts } from "../hooks/useMenu";
 import { formatVND } from "../lib/format";
 import CartItemRow from "../features/cart/CartItemRow";
 
 export default function CartPage() {
   const navigate = useNavigate();
-  const { items, subtotal, clear } = useCart();
+  const { items, subtotal, clear, reconcilePrices } = useCart();
   const [tableId, setTableId] = useState("");
   const [note, setNote] = useState("");
+
+  // Đồng bộ giá giỏ với thực đơn mới nhất: basePrice có thể đã đổi từ lúc thêm vào giỏ
+  // (giỏ lưu ở localStorage và tồn tại lâu dài). Báo cho khách nếu có món đổi giá.
+  const { data: productRes } = useProducts({ limit: 200, isAvailable: true });
+  const products = productRes?.data;
+  useEffect(() => {
+    if (!products?.length) return;
+    const map = new Map(products.map((p) => [p._id, p]));
+    const stale = items.some((i) => {
+      const p = map.get(i.productId);
+      return p && typeof p.basePrice === "number" && p.basePrice !== i.basePrice;
+    });
+    reconcilePrices(map);
+    if (stale) toast("Giá một số món đã được cập nhật theo thực đơn mới nhất.", { icon: "💰" });
+    // Chạy lại mỗi khi danh sách sản phẩm đổi; items cố tình bỏ khỏi deps để chỉ báo 1 lần.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [products, reconcilePrices]);
 
   // Chỉ lấy bàn đang hoạt động để khách chọn
   const { data: tables = [], isLoading: tablesLoading, isError: tablesError } = useTables({
