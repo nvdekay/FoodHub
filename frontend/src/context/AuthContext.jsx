@@ -14,8 +14,15 @@ export const useAuth = () => {
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
-    const raw = localStorage.getItem(USER_KEY);
-    return raw ? JSON.parse(raw) : null;
+    // localStorage có thể chứa JSON hỏng (ghi dở, bản cũ, sửa tay). Nếu parse lỗi
+    // thì coi như chưa đăng nhập thay vì để app trắng màn hình ngay khi khởi tạo.
+    try {
+      const raw = localStorage.getItem(USER_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      localStorage.removeItem(USER_KEY);
+      return null;
+    }
   });
   const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY));
 
