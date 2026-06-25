@@ -19,13 +19,16 @@ export default function AdminOrdersPage() {
 
   const { data: tables = [] } = useTables();
 
+  // Gửi mốc thời gian dạng ISO (UTC) tính từ đầu/cuối ngày theo giờ địa phương của
+  // người lọc, thay vì chuỗi "YYYY-MM-DDThh:mm:ss" không kèm timezone (BE diễn giải
+  // lệ thuộc TZ server → lệch giờ, lọc sai biên ngày).
   const params = {
     page,
     limit: LIMIT,
     ...(status ? { status } : {}),
     ...(tableId ? { tableId } : {}),
-    ...(from ? { from: `${from}T00:00:00` } : {}),
-    ...(to ? { to: `${to}T23:59:59` } : {}),
+    ...(from ? { from: new Date(`${from}T00:00:00`).toISOString() } : {}),
+    ...(to ? { to: new Date(`${to}T23:59:59.999`).toISOString() } : {}),
   };
   const { data: res, isLoading, isError } = useStaffOrders(params);
   const orders = res?.data || [];
