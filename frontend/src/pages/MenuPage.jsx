@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Sparkles, UtensilsCrossed } from "lucide-react";
-import { useCategories, useProducts } from "../hooks/useMenu";
+import { useCategories, useProducts, useInfiniteProducts } from "../hooks/useMenu";
 import { useDebounce } from "../hooks/useDebounce";
-import { Card, Skeleton, EmptyState } from "../components/ui";
+import { Card, Skeleton, EmptyState, Spinner, Button } from "../components/ui";
 import CategoryChips from "../features/menu/CategoryChips";
 import ProductCard from "../features/menu/ProductCard";
 import ProductDetailModal from "../features/menu/ProductDetailModal";
@@ -33,32 +33,56 @@ export default function MenuPage() {
   const debounced = useDebounce(search, 350);
 
   const { data: categories = [] } = useCategories();
-  // Đẩy tìm kiếm + lọc danh mục xuống server (BE hỗ trợ regex theo tên) thay vì chỉ lọc
-  // client trên 100 món đầu — nếu không, món thứ 101 trở đi sẽ không bao giờ tìm thấy.
-  const { data: res, isLoading, isError } = useProducts({
-    limit: 100,
+
+  // Đẩy tìm kiếm + lọc danh mục xuống server và tải nối tiếp theo trang (infinite scroll)
+  // để duyệt được toàn bộ thực đơn, không bị giới hạn 100 món đầu.
+  const {
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteProducts({
+    limit: 48,
     isAvailable: true,
     search: debounced.trim() || undefined,
     categoryId: activeCat || undefined,
   });
-  const all = res?.data || [];
+  const all = data?.pages.flatMap((p) => p.data) || [];
+  const totalCount = data?.pages[0]?.pagination?.total ?? all.length;
+
+  // Món nổi bật tải riêng (không phụ thuộc thứ tự trang đã cuộn).
+  const { data: featuredRes } = useProducts({ isAvailable: true, isFeatured: true, limit: 12 });
+  const featured = featuredRes?.data || [];
 
   const q = debounced.trim().toLowerCase();
   const searching = q.length > 0;
-  const matchSearch = (p) => !q || p.name.toLowerCase().includes(q);
 
-  // Kết quả tìm kiếm (phẳng) — tôn trọng cả danh mục đang chọn
-  const searchResults = all.filter(
-    (p) => matchSearch(p) && (!activeCat || catOf(p) === activeCat)
-  );
+  // Server đã lọc theo search + categoryId; phần dưới chỉ trình bày (phẳng / nhóm).
+  const searchResults = all;
 
   // Nhóm theo danh mục (giữ thứ tự danh mục)
   const groups = categories
-    .map((c) => ({ category: c, items: all.filter((p) => catOf(p) === c._id && matchSearch(p)) }))
+    .map((c) => ({ category: c, items: all.filter((p) => catOf(p) === c._id) }))
     .filter((g) => g.items.length > 0);
   const sections = activeCat ? groups.filter((g) => g.category._id === activeCat) : groups;
 
-  const featured = all.filter((p) => p.isFeatured);
+  // Tự tải trang kế khi cuộn tới cuối danh sách (sentinel + IntersectionObserver).
+  const sentinelRef = useRef(null);
+  const loadMore = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => entries[0]?.isIntersecting && loadMore(),
+      { rootMargin: "400px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [loadMore]);
 
   return (
     <div className="space-y-6">
@@ -80,7 +104,7 @@ export default function MenuPage() {
         searchResults.length ? (
           <section>
             <h2 className="mb-4 text-lg font-bold text-gray-800">
-              Kết quả cho “{debounced}” ({searchResults.length})
+              Kết quả cho “{debounced}” ({totalCount})
             </h2>
             <ProductGrid>
               {searchResults.map((p) => (
@@ -124,6 +148,21 @@ export default function MenuPage() {
               onSelect={setSelected}
             />
           ))}
+        </div>
+      )}
+
+      {/* Tải thêm: sentinel tự kích hoạt khi cuộn tới, kèm nút dự phòng + chỉ báo đang tải */}
+      {!isLoading && !isError && all.length > 0 && (
+        <div ref={sentinelRef} className="flex justify-center py-4">
+          {isFetchingNextPage ? (
+            <span className="flex items-center gap-2 text-sm text-gray-500">
+              <Spinner className="h-4 w-4" /> Đang tải thêm món...
+            </span>
+          ) : hasNextPage ? (
+            <Button variant="secondary" onClick={loadMore}>
+              Xem thêm món
+            </Button>
+          ) : null}
         </div>
       )}
 
